@@ -36,10 +36,10 @@ public:
 		glTexCoord2fv(&coord_[0]);
 		glVertex3fv(&point_[0]);
 	}
-	void glArbPoint(float w, float h) {
+	void glArbPoint(const ofVec2f &uv_size) {
 		glColor4ubv(&color_[0]);
 		glNormal3fv(&normal_[0]);
-		glTexCoord2fv(&(coord_*ofVec2f(w,h))[0]);
+		glTexCoord2fv(&(coord_*uv_size)[0]);
 		glVertex3fv(&point_[0]);
 	}
 
@@ -57,15 +57,16 @@ public:
 	Mesh();
 	~Mesh();
 	void setup(int div_x, int div_y, float w, float h);
+	void setTexCoordSize(float u, float v);
 	void divideX(int pos);
 	void divideY(int pos);
-	void reset();
+	void reset(float w, float h);
 	void drawMesh();
 	void drawWireframe();
 	vector<MeshPoint*> getPoints();
 private:
 	int div_x_, div_y_;
-	float w_, h_;
+	ofVec2f uv_size_;
 	vector<int> indices_;
 	vector<MeshPoint> mesh_;	
 	int getIndex(int x, int y) const { return indices_[y*div_x_+x]; }

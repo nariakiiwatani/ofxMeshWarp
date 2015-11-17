@@ -2,10 +2,10 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-	ofDisableArbTex();
-	mesh_.setup(5,5,512,512);
-	controller_.add(&mesh_);
 	ofLoadImage(tex_, "of.png");
+	mesh_.setup(5,5,512,512);
+	mesh_.setTexCoordSize(tex_.getWidth(), tex_.getHeight());
+	controller_.add(&mesh_);
 }
 
 //--------------------------------------------------------------

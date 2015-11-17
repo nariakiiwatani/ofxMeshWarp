@@ -3,6 +3,7 @@
 
 OFX_MESH_WARP_BEGIN_NAMESPACE
 Mesh::Mesh()
+:uv_size_(1,1)
 {
 }
 Mesh::~Mesh()
@@ -16,14 +17,17 @@ void Mesh::setup(int div_x, int div_y, float w, float h)
 	}
 	div_x_ = div_x;
 	div_y_ = div_y;
-	w_ = w;
-	h_ = h;
 	mesh_.clear();
 	for(int i = 0, num = div_x_*div_y_; i < num; ++i) {
 		mesh_.push_back(MeshPoint());
 	}
-	reset();
+	reset(w,h);
 }
+void Mesh::setTexCoordSize(float u, float v)
+{
+	uv_size_.set(u,v);
+}
+
 void Mesh::divideX(int pos)
 {
 	if(pos >= div_x_-1) {
@@ -60,14 +64,14 @@ void Mesh::divideY(int pos)
 	indices_ = indices;
 	++div_y_;
 }
-void Mesh::reset()
+void Mesh::reset(float w, float h)
 {
 	indices_.clear();
 	for(int i = 0, num = div_x_*div_y_; i < num; ++i) {
 		MeshPoint &point = mesh_[i];
 		ofVec2f coord = ofVec2f(i%div_x_,i/div_x_)/ofVec2f(div_x_-1,div_y_-1);
 		point.setCoord(coord);
-		point.setPoint(coord*ofVec2f(w_,h_));
+		point.setPoint(coord*ofVec2f(w,h));
 		indices_.push_back(i);
 	}
 }
@@ -88,13 +92,13 @@ void Mesh::drawMesh()
 	if(ofGetUsingArbTex()) {
 		for(int y = 0; y < div_y_-1; ++y) {
 			for(int x = 0; x < div_x_-1; ++x) {
-				mesh_[getIndex(x  ,y  )].glArbPoint(w_, h_);
-				mesh_[getIndex(x  ,y+1)].glArbPoint(w_, h_);
-				mesh_[getIndex(x+1,y  )].glArbPoint(w_, h_);
+				mesh_[getIndex(x  ,y  )].glArbPoint(uv_size_);
+				mesh_[getIndex(x  ,y+1)].glArbPoint(uv_size_);
+				mesh_[getIndex(x+1,y  )].glArbPoint(uv_size_);
 				
-				mesh_[getIndex(x+1,y  )].glArbPoint(w_, h_);
-				mesh_[getIndex(x  ,y+1)].glArbPoint(w_, h_);
-				mesh_[getIndex(x+1,y+1)].glArbPoint(w_, h_);
+				mesh_[getIndex(x+1,y  )].glArbPoint(uv_size_);
+				mesh_[getIndex(x  ,y+1)].glArbPoint(uv_size_);
+				mesh_[getIndex(x+1,y+1)].glArbPoint(uv_size_);
 			}
 		}
 	}
@@ -119,15 +123,15 @@ void Mesh::drawWireframe()
 	if(ofGetUsingArbTex()) {
 		for(int y = 0; y < div_y_-1; ++y) {
 			for(int x = div_x_; --x>=0;) {
-				mesh_[getIndex(x,y)].glArbPoint(w_, h_);
+				mesh_[getIndex(x,y)].glArbPoint(uv_size_);
 			}
 			for(int x = 0; x < div_x_-1; ++x) {
-				mesh_[getIndex(x,y+1)].glArbPoint(w_, h_);
-				mesh_[getIndex(x+1,y)].glArbPoint(w_, h_);
+				mesh_[getIndex(x,y+1)].glArbPoint(uv_size_);
+				mesh_[getIndex(x+1,y)].glArbPoint(uv_size_);
 			}
 		}
 		for(int x = div_x_; --x>=0;) {
-			mesh_[getIndex(x,div_y_-1)].glArbPoint(w_, h_);
+			mesh_[getIndex(x,div_y_-1)].glArbPoint(uv_size_);
 		}
 	}
 	else {
