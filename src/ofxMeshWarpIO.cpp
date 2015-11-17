@@ -1,8 +1,9 @@
 #include "ofxMeshWarpIO.h"
 
-OFX_MESH_WARP_BEGIN_NAMESPACE
+using namespace ofx::MeshWarp;
+using namespace ofx::MeshWarp::IO;
 
-void io::PointHelper::get(ofBuffer &buffer) const
+void PointHelper::get(ofBuffer &buffer) const
 {
 	PointData data;
 	data.point = target_->point();
@@ -11,7 +12,7 @@ void io::PointHelper::get(ofBuffer &buffer) const
 	data.color = target_->color();
 	buffer.append((const char*)(&data), sizeof(PointData));
 }
-int io::PointHelper::set(const char *buffer)
+int PointHelper::set(const char *buffer)
 {
 	PointData *data = (PointData*)buffer;
 	target_->setPoint(data->point);
@@ -20,7 +21,7 @@ int io::PointHelper::set(const char *buffer)
 	target_->setColor(data->color);
 	return sizeof(PointData);
 }
-void io::MeshHelper::get(ofBuffer &buffer) const
+void MeshHelper::get(ofBuffer &buffer) const
 {
 	MeshData data;
 	data.divx = target_->getDivX();
@@ -28,14 +29,14 @@ void io::MeshHelper::get(ofBuffer &buffer) const
 	data.uv_size = target_->getTexCoordSize();
 	buffer.append((const char*)(&data), sizeof(MeshData));
 }
-int io::MeshHelper::set(const char *buffer)
+int MeshHelper::set(const char *buffer)
 {
 	MeshData *data = (MeshData*)buffer;
 	target_->setup(data->divx, data->divy, 1, 1);
 	target_->setTexCoordSize(data->uv_size[0], data->uv_size[1]);
 	return sizeof(MeshData);
 }
-io::Saver::Saver(Mesh *mesh, string filename)
+Saver::Saver(Mesh *mesh, string filename)
 {
 	ofBuffer buffer;
 	MeshHelper(mesh).get(buffer);
@@ -45,7 +46,7 @@ io::Saver::Saver(Mesh *mesh, string filename)
 	}
 	ofBufferToFile(filename, buffer, true);
 }
-io::Loader::Loader(Mesh *mesh, string filename)
+Loader::Loader(Mesh *mesh, string filename)
 {
 	ofBuffer buffer = ofBufferFromFile(filename, true);
 	const char *ptr = buffer.getData();
@@ -56,5 +57,3 @@ io::Loader::Loader(Mesh *mesh, string filename)
 	}
 }
 
-
-OFX_MESH_WARP_END_NAMESPACE

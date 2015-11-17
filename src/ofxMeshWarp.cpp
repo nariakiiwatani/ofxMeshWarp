@@ -1,7 +1,7 @@
 #include "ofxMeshWarp.h"
 #include "ofTexture.h"
 
-OFX_MESH_WARP_BEGIN_NAMESPACE
+using namespace ofx::MeshWarp;
 Mesh::Mesh()
 :uv_size_(1,1)
 {
@@ -150,4 +150,3 @@ void Mesh::drawWireframe()
 	}
 	glEnd();
 }
-OFX_MESH_WARP_END_NAMESPACE

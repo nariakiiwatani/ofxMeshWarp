@@ -1,8 +1,10 @@
 #include "ofxMeshWarpController.h"
 #include "ofGraphics.h"
 
-OFX_MESH_WARP_BEGIN_NAMESPACE
-Editor::Controller::Controller()
+using namespace ofx::MeshWarp;
+using namespace ofx::MeshWarp::Editor;
+
+Controller::Controller()
 {
 	is_enabled_ = false;
 	point_size_ = 10;
@@ -10,11 +12,11 @@ Editor::Controller::Controller()
 	clear();
 	enable();
 }
-Editor::Controller::~Controller()
+Controller::~Controller()
 {
 	disable();
 }
-void Editor::Controller::enable()
+void Controller::enable()
 {
 	if(!is_enabled_) {
 		ofRegisterMouseEvents(this);
@@ -22,7 +24,7 @@ void Editor::Controller::enable()
 		is_enabled_ = true;
 	}
 }
-void Editor::Controller::disable()
+void Controller::disable()
 {
 	if(is_enabled_) {
 		ofUnregisterMouseEvents(this);
@@ -35,11 +37,11 @@ void Editor::Controller::disable()
 		is_enabled_ = false;
 	}
 }
-void Editor::Controller::add(Mesh *mesh)
+void Controller::add(Mesh *mesh)
 {
 	meshes_.insert(mesh);
 }
-void Editor::Controller::clear()
+void Controller::clear()
 {
 	mouse_op_.hover = NULL;
 	mouse_op_.inside_rect.clear();
@@ -48,7 +50,7 @@ void Editor::Controller::clear()
 	mouse_op_.pressed_state = MouseOperation::STATE_NONE;
 	meshes_.clear();
 }
-void Editor::Controller::draw()
+void Controller::draw()
 {
 	ofPushStyle();
 	for(auto &mesh : meshes_) {
@@ -85,7 +87,7 @@ void Editor::Controller::draw()
 	}
 	ofPopStyle();
 }
-void Editor::Controller::mousePressed(ofMouseEventArgs &args)
+void Controller::mousePressed(ofMouseEventArgs &args)
 {
 	mouse_op_.pressed_pos = args;
 	if(mouse_op_.hover) {
@@ -114,7 +116,7 @@ void Editor::Controller::mousePressed(ofMouseEventArgs &args)
 		mouse_op_.pressed_state = MouseOperation::STATE_MAKING_RECT;
 	}
 }
-void Editor::Controller::mouseReleased(ofMouseEventArgs &args)
+void Controller::mouseReleased(ofMouseEventArgs &args)
 {
 	if(isMakingRect()) {
 		if(!isMultiSelect() && !isAdditive()) {
@@ -134,7 +136,7 @@ void Editor::Controller::mouseReleased(ofMouseEventArgs &args)
 	mouse_op_.pressed_state = MouseOperation::STATE_NONE;
 	mouseMoved(args);
 }
-void Editor::Controller::mouseMoved(ofMouseEventArgs &args)
+void Controller::mouseMoved(ofMouseEventArgs &args)
 {
 	mouse_op_.hover = NULL;
 	mouse_op_.pos = args;
@@ -146,7 +148,7 @@ void Editor::Controller::mouseMoved(ofMouseEventArgs &args)
 		}
 	}
 }
-void Editor::Controller::mouseDragged(ofMouseEventArgs &args)
+void Controller::mouseDragged(ofMouseEventArgs &args)
 {
 	mouse_op_.pos = args;
 	if(isMakingRect()) {
@@ -175,16 +177,16 @@ void Editor::Controller::mouseDragged(ofMouseEventArgs &args)
 		}
 	}
 }
-void Editor::Controller::mouseScrolled(ofMouseEventArgs &args)
+void Controller::mouseScrolled(ofMouseEventArgs &args)
 {
 }
-void Editor::Controller::mouseEntered(ofMouseEventArgs &args)
+void Controller::mouseEntered(ofMouseEventArgs &args)
 {
 }
-void Editor::Controller::mouseExited(ofMouseEventArgs &args)
+void Controller::mouseExited(ofMouseEventArgs &args)
 {
 }
-void Editor::Controller::keyPressed(ofKeyEventArgs &args)
+void Controller::keyPressed(ofKeyEventArgs &args)
 {
 	ofVec2f delta;
 	switch(args.key) {
@@ -202,12 +204,12 @@ void Editor::Controller::keyPressed(ofKeyEventArgs &args)
 		}
 	}
 }
-void Editor::Controller::keyReleased(ofKeyEventArgs &args)
+void Controller::keyReleased(ofKeyEventArgs &args)
 {
 }
 
 
-MeshPoint* Editor::MeshHelper::getHit(const ofVec2f &test, float room, int index) const
+MeshPoint* MeshHelper::getHit(const ofVec2f &test, float room, int index) const
 {
 	const vector<MeshPoint*> &points = target_->getPoints();
 	for(auto &p : points) {
@@ -220,7 +222,7 @@ MeshPoint* Editor::MeshHelper::getHit(const ofVec2f &test, float room, int index
 	}
 	return NULL;
 }
-vector<MeshPoint*> Editor::MeshHelper::getHit(const ofRectangle &test) const
+vector<MeshPoint*> MeshHelper::getHit(const ofRectangle &test) const
 {
 	vector<MeshPoint*> ret;
 	const vector<MeshPoint*> &points = target_->getPoints();
@@ -231,4 +233,3 @@ vector<MeshPoint*> Editor::MeshHelper::getHit(const ofRectangle &test) const
 	}
 	return ret;
 }
-OFX_MESH_WARP_END_NAMESPACE

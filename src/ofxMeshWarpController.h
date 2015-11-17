@@ -4,9 +4,7 @@
 #include "ofxMeshWarp.h"
 #include "ofRectangle.h"
 
-#include "ofxMeshWarpDef.h"
-
-OFX_MESH_WARP_BEGIN_NAMESPACE
+namespace ofx{namespace MeshWarp{
 namespace Editor {
 	class PointHelper : public pair<MeshPoint*,MeshPoint> {
 	public:
@@ -81,6 +79,5 @@ namespace Editor {
 		bool isArrowKeyJump() const { return ofGetKeyPressed(OF_KEY_SHIFT); }
 	};
 }
-OFX_MESH_WARP_END_NAMESPACE
-
+}}
 using ofxMeshWarpController = ofx::MeshWarp::Editor::Controller;

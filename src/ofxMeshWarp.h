@@ -1,12 +1,11 @@
 #pragma once
 
-#include "ofxMeshWarpDef.h"
 #include "ofConstants.h"
 #include "ofVec2f.h"
 #include "ofVec3f.h"
 #include "ofColor.h"
 
-OFX_MESH_WARP_BEGIN_NAMESPACE
+namespace ofx{namespace MeshWarp{
 class MeshPoint
 {
 public:
@@ -74,6 +73,6 @@ private:
 	vector<MeshPoint> mesh_;	
 	int getIndex(int x, int y) const { return indices_[y*div_x_+x]; }
 };
-OFX_MESH_WARP_END_NAMESPACE
-
+}}
 using ofxMeshWarp = ofx::MeshWarp::Mesh;
+using ofxMeshWarpPoint = ofx::MeshWarp::MeshPoint;

@@ -1,12 +1,10 @@
 #pragma once
 
-#include "ofxMeshWarpDef.h"
 #include "ofxMeshWarp.h"
 #include "ofFileUtils.h"
 
-OFX_MESH_WARP_BEGIN_NAMESPACE
-
-namespace io {
+namespace ofx{namespace MeshWarp{
+namespace IO {
 	class PointHelper {
 	public:
 		PointHelper(MeshPoint *p):target_(p){}
@@ -43,7 +41,6 @@ namespace io {
 	};
 }
 
-OFX_MESH_WARP_END_NAMESPACE
-
-using ofxMeshWarpSave = ofx::MeshWarp::io::Saver;
-using ofxMeshWarpLoad = ofx::MeshWarp::io::Loader;
+}}
+using ofxMeshWarpSave = ofx::MeshWarp::IO::Saver;
+using ofxMeshWarpLoad = ofx::MeshWarp::IO::Loader;
