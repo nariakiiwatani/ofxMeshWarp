@@ -37,7 +37,12 @@ namespace Editor {
 		~Controller();
 		void add(Mesh *target);
 		void clear();
+		void enable();
+		void disable();
+		void setEnable(bool set) { set?enable():disable(); }
+		bool isEnabled() { return is_enabled_; }
 		void draw();
+		
 		void mousePressed(ofMouseEventArgs &args);
 		void mouseReleased(ofMouseEventArgs &args);
 		void mouseMoved(ofMouseEventArgs &args);
@@ -50,6 +55,7 @@ namespace Editor {
 	private:
 		set<Mesh*> meshes_;
 		
+		bool is_enabled_;
 		struct MouseOperation {
 			MeshPoint *hover;
 			vector<MeshPoint*> inside_rect;

@@ -4,16 +4,36 @@
 OFX_MESH_WARP_BEGIN_NAMESPACE
 Editor::Controller::Controller()
 {
-	ofRegisterMouseEvents(this);
-	ofRegisterKeyEvents(this);
+	is_enabled_ = false;
 	point_size_ = 10;
 	screen_to_coord_ = 1/100.f;
-	mouse_op_.pressed_state = MouseOperation::STATE_NONE;
+	clear();
+	enable();
 }
 Editor::Controller::~Controller()
 {
-	ofUnregisterMouseEvents(this);
-	ofUnregisterKeyEvents(this);
+	disable();
+}
+void Editor::Controller::enable()
+{
+	if(!is_enabled_) {
+		ofRegisterMouseEvents(this);
+		ofRegisterKeyEvents(this);
+		is_enabled_ = true;
+	}
+}
+void Editor::Controller::disable()
+{
+	if(is_enabled_) {
+		ofUnregisterMouseEvents(this);
+		ofUnregisterKeyEvents(this);
+		mouse_op_.hover = NULL;
+		mouse_op_.inside_rect.clear();
+		mouse_op_.edit.clear();
+		selected_.clear();
+		mouse_op_.pressed_state = MouseOperation::STATE_NONE;
+		is_enabled_ = false;
+	}
 }
 void Editor::Controller::add(Mesh *mesh)
 {
@@ -25,6 +45,7 @@ void Editor::Controller::clear()
 	mouse_op_.inside_rect.clear();
 	mouse_op_.edit.clear();
 	selected_.clear();
+	mouse_op_.pressed_state = MouseOperation::STATE_NONE;
 	meshes_.clear();
 }
 void Editor::Controller::draw()
