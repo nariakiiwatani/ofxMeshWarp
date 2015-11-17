@@ -64,6 +64,9 @@ public:
 	void drawMesh();
 	void drawWireframe();
 	vector<MeshPoint*> getPoints();
+	int getDivX() { return div_x_; }
+	int getDivY() { return div_y_; }
+	const ofVec2f& getTexCoordSize() { return uv_size_; }
 private:
 	int div_x_, div_y_;
 	ofVec2f uv_size_;
