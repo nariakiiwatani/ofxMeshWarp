@@ -98,13 +98,6 @@ void Controller::mousePressed(ofMouseEventArgs &args)
 	switch(args.button) {
 		case OF_MOUSE_BUTTON_LEFT:
 			if(mouse_op_.hover) {
-				if(isTogglePinned()) {
-					bool set = !mouse_op_.hover->isNode();
-					mouse_op_.hover->setNode(set);
-					for(auto &p : selected_) {
-						p->setNode(set);
-					}
-				}
 				mouse_op_.pressed_state = MouseOperation::STATE_GRABBING_VERTEX;
 			}
 			else {
@@ -113,11 +106,6 @@ void Controller::mousePressed(ofMouseEventArgs &args)
 			break;
 		case OF_MOUSE_BUTTON_MIDDLE:
 			if(mouse_op_.hover) {
-				bool set = !mouse_op_.hover->isNode();
-				mouse_op_.hover->setNode(set);
-				for(auto &p : selected_) {
-					p->setNode(set);
-				}
 				mouse_op_.pressed_state = MouseOperation::STATE_GRABBING_VERTEX;
 			}
 			break;
@@ -143,7 +131,14 @@ void Controller::mousePressed(ofMouseEventArgs &args)
 					mouse_op_.pressed_state = MouseOperation::STATE_NONE;
 				}
 			}
-			if(isGrabbingVertex() || isGrabbingCoord()) {
+			if(isToggleNode()) {
+				bool set = !mouse_op_.hover->isNode();
+				mouse_op_.hover->setNode(set);
+				for(auto &p : selected_) {
+					p->setNode(set);
+				}
+			}
+			else if(isGrabbingVertex() || isGrabbingCoord()) {
 				for(auto &p : selected_) {
 					mouse_op_.edit.push_back(p);
 				}
@@ -215,6 +210,9 @@ void Controller::mouseDragged(ofMouseEventArgs &args)
 				}
 			}
 		}
+		for(auto &m : meshes_) {
+			m->solve();
+		}
 	}
 }
 void Controller::mouseScrolled(ofMouseEventArgs &args)
@@ -235,9 +233,14 @@ void Controller::keyPressed(ofKeyEventArgs &args)
 		case OF_KEY_LEFT:	delta = ofVec2f(-1,0); break;
 		case OF_KEY_RIGHT:	delta = ofVec2f(1, 0); break;
 	}
-	for(auto &p : selected_) {
-		if(p->isNode()) {
-			PointHelper(p).moveVertex(delta*(isArrowKeyJump()?10:1));
+	if(delta.lengthSquared() > 0) {
+		for(auto &p : selected_) {
+			if(p->isNode()) {
+				PointHelper(p).moveVertex(delta*(isArrowKeyJump()?10:1));
+			}
+		}
+		for(auto &m : meshes_) {
+			m->solve();
 		}
 	}
 }

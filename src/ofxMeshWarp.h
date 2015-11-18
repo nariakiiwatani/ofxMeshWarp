@@ -64,6 +64,7 @@ public:
 	void divideX(int pos);
 	void divideY(int pos);
 	void reset(float w, float h);
+	void solve();
 	void drawMesh();
 	void drawWireframe();
 	vector<MeshPoint*> getPoints();

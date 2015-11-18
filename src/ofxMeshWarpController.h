@@ -73,7 +73,7 @@ namespace Editor {
 		bool isGrabbingVertex() const { return mouse_op_.pressed_state==MouseOperation::STATE_GRABBING_VERTEX; }
 		bool isGrabbingCoord() const { return mouse_op_.pressed_state==MouseOperation::STATE_GRABBING_COORD; }
 		bool isMakingRect() const { return mouse_op_.pressed_state==MouseOperation::STATE_MAKING_RECT; }
-		bool isTogglePinned() const { return ofGetKeyPressed(OF_KEY_ALT); }
+		bool isToggleNode() const { return ofGetKeyPressed(OF_KEY_ALT); }
 		bool isSlide() const { return ofGetKeyPressed(OF_KEY_SHIFT); }
 		bool isAdditive() const { return ofGetKeyPressed(OF_KEY_SHIFT); }
 		bool isMultiSelect() const { return ofGetKeyPressed(OF_KEY_COMMAND); }

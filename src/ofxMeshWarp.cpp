@@ -75,6 +75,93 @@ void Mesh::reset(float w, float h)
 		indices_.push_back(i);
 	}
 }
+void Mesh::solve()
+{
+	// 枠上を決定
+	auto solveFlameX = [&](int y) {
+		vector<MeshPoint*> work;
+		work.clear();
+		work.push_back(&mesh_[getIndex(0,y)]);
+		for(int x = 1; x < div_x_; ++x) {
+			MeshPoint *p1 = &mesh_[getIndex(x,y)];
+			if(p1->isNode() || x == div_x_-1) {
+				if(work.size() > 1) {
+					MeshPoint *p0 = work[0];
+					for(int w = 1, num = work.size(); w < num; ++w) {
+						*work[w] = MeshPoint::getLerped(*p0, *p1, w/(float)num);
+						work[w]->setNode(false);
+					}
+				}
+				work.clear();
+			}
+			work.push_back(p1);
+		}
+	};
+	auto solveFlameY = [&](int x) {
+		vector<MeshPoint*> work;
+		work.clear();
+		work.push_back(&mesh_[getIndex(x,0)]);
+		for(int y = 1; y < div_y_; ++y) {
+			MeshPoint *p1 = &mesh_[getIndex(x,y)];
+			if(p1->isNode() || y == div_y_-1) {
+				if(work.size() > 1) {
+					MeshPoint *p0 = work[0];
+					for(int w = 1, num = work.size(); w < num; ++w) {
+						*work[w] = MeshPoint::getLerped(*p0, *p1, w/(float)num);
+						work[w]->setNode(false);
+					}
+				}
+				work.clear();
+			}
+			work.push_back(p1);
+		}
+	};
+	auto solveInternal = [&](int x, int y) {
+		auto getDistanceToNode = [&](int x, int y, int diff_x, int diff_y) ->int {
+			int ret = 0;
+			while(0 < x && x < div_x_-1 && 0 < y && y < div_y_-1) {
+				x += diff_x; y += diff_y;
+				++ret;
+				if(mesh_[getIndex(x,y)].isNode()) break;
+			}
+			return ret;
+		};
+		int to_u = getDistanceToNode(x,y,0,-1);
+		int to_d = getDistanceToNode(x,y,0, 1);
+		int to_l = getDistanceToNode(x,y,-1,0);
+		int to_r = getDistanceToNode(x,y, 1,0);
+		auto getRatio = [&](int self) ->float {
+			float inv_sum = 1/(float)to_u+1/(float)to_d+1/(float)to_l+1/(float)to_r;
+			return ofMap(1/(float)self, 0, inv_sum, 0, 1, false);
+		};
+		float r_u = getRatio(to_u);
+		float r_d = getRatio(to_d);
+		float r_l = getRatio(to_l);
+		float r_r = getRatio(to_r);
+		
+		MeshPoint &u = mesh_[getIndex(x,y-to_u)];
+		MeshPoint &d = mesh_[getIndex(x,y+to_d)];
+		MeshPoint &l = mesh_[getIndex(x-to_l,y)];
+		MeshPoint &r = mesh_[getIndex(x+to_r,y)];
+		MeshPoint &dst = mesh_[getIndex(x,y)];
+		dst.setPoint(u.point()*r_u+d.point()*r_d+l.point()*r_l+r.point()*r_r);
+		dst.setCoord(u.coord()*r_u+d.coord()*r_d+l.coord()*r_l+r.coord()*r_r);
+		dst.setNormal(u.normal()*r_u+d.normal()*r_d+l.normal()*r_l+r.normal()*r_r);
+		dst.setColor(u.color()*r_u+d.color()*r_d+l.color()*r_l+r.color()*r_r);
+	};
+	solveFlameX(0);
+	solveFlameX(div_y_-1);
+	solveFlameY(0);
+	solveFlameY(div_x_-1);
+	for(int y = 1; y < div_y_-1; ++y) {
+		for(int x = 1; x < div_x_-1; ++x) {
+			if(!mesh_[getIndex(x,y)].isNode()) {
+				solveInternal(x,y);
+			}
+		}
+	}
+}
+
 vector<MeshPoint*> Mesh::getPoints()
 {
 	vector<MeshPoint*> ret;
