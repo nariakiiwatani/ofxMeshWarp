@@ -10,7 +10,7 @@ class MeshPoint
 {
 public:
 	MeshPoint()
-	:point_(0,0,0),coord_(0,0),normal_(0,0,1),color_(ofColor::white)
+	:point_(0,0,0),coord_(0,0),normal_(0,0,1),color_(ofColor::white),is_node_(true)
 	{}
 	static MeshPoint getLerped(const MeshPoint &a, const MeshPoint &b, float mix) {
 		MeshPoint ret;
@@ -24,10 +24,13 @@ public:
 	const ofVec2f &coord() const { return coord_; }
 	const ofVec3f &normal() const { return normal_; }
 	const ofColor &color() const { return color_; }
+	bool isNode() const { return is_node_; }
 	void setPoint(const ofVec3f &point) { point_=point; }
 	void setCoord(const ofVec2f &coord) { coord_=coord; }
 	void setNormal(const ofVec3f &normal) { normal_=normal; }
 	void setColor(const ofColor &color) { color_=color; }
+	void setNode(bool set) { is_node_=set; }
+	void toggleNode() { is_node_^=true; }
 	
 	void glPoint() {
 		glColor4ubv(&color_[0]);
@@ -47,6 +50,7 @@ private:
 	ofVec2f coord_;
 	ofVec3f normal_;
 	ofColor color_;
+	bool is_node_;
 };
 
 

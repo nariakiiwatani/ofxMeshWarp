@@ -52,6 +52,10 @@ void Controller::clear()
 }
 void Controller::draw()
 {
+	auto drawCircle = [&](MeshPoint* p, float size_add=0) {
+		float size = point_size_*(p->isNode()?1:0.5f)+size_add;
+		ofDrawCircle(p->point(), size);
+	};
 	ofPushStyle();
 	for(auto &mesh : meshes_) {
 		mesh->drawWireframe();
@@ -61,24 +65,24 @@ void Controller::draw()
 	for(auto &mesh : meshes_) {
 		auto points = mesh->getPoints();
 		for(auto &p : points) {
-			ofDrawCircle(p->point(), point_size_);
+			drawCircle(p);
 		}
 	}
 	ofSetColor(ofColor::green);
 	ofFill();
 	if(mouse_op_.hover) {
-		ofDrawCircle(mouse_op_.hover->point(), point_size_+2);
+		drawCircle(mouse_op_.hover, 2);
 	}
 	for(auto &p : mouse_op_.inside_rect) {
-		ofDrawCircle(p->point(), point_size_+2);
+		drawCircle(p, 2);
 	}
 	ofSetColor(ofColor::red);
 	ofFill();
 	for(auto &p : selected_) {
-		ofDrawCircle(p->point(), point_size_);
+		drawCircle(p);
 	}
 	for(auto &p : mouse_op_.edit) {
-		ofDrawCircle(p.first->point(), point_size_);
+		drawCircle(p.first);
 	}
 	if(isMakingRect()) {
 		ofFill();
@@ -90,30 +94,64 @@ void Controller::draw()
 void Controller::mousePressed(ofMouseEventArgs &args)
 {
 	mouse_op_.pressed_pos = args;
-	if(mouse_op_.hover) {
-		mouse_op_.pressed_state = MouseOperation::STATE_GRABBING;
-		const auto &it = selected_.insert(mouse_op_.hover);
-		if(it.second) {
-			if(!isMultiSelect() && !isAdditive()) {
-				selected_.clear();
-				selected_.insert(mouse_op_.hover);
+	mouse_op_.pressed_state = MouseOperation::STATE_NONE;
+	switch(args.button) {
+		case OF_MOUSE_BUTTON_LEFT:
+			if(mouse_op_.hover) {
+				if(isTogglePinned()) {
+					bool set = !mouse_op_.hover->isNode();
+					mouse_op_.hover->setNode(set);
+					for(auto &p : selected_) {
+						p->setNode(set);
+					}
+				}
+				mouse_op_.pressed_state = MouseOperation::STATE_GRABBING_VERTEX;
 			}
-		}
-		else {
-			if(isMultiSelect()) {
-				selected_.erase(mouse_op_.hover);
-				mouse_op_.pressed_state = MouseOperation::STATE_NONE;
+			else {
+				mouse_op_.pressed_state = MouseOperation::STATE_MAKING_RECT;
 			}
-		}
-		if(isGrabbing()) {
-			for(auto &p : selected_) {
-				mouse_op_.edit.push_back(p);
+			break;
+		case OF_MOUSE_BUTTON_MIDDLE:
+			if(mouse_op_.hover) {
+				bool set = !mouse_op_.hover->isNode();
+				mouse_op_.hover->setNode(set);
+				for(auto &p : selected_) {
+					p->setNode(set);
+				}
+				mouse_op_.pressed_state = MouseOperation::STATE_GRABBING_VERTEX;
 			}
-			mouse_op_.hover = NULL;
-		}
+			break;
+		case OF_MOUSE_BUTTON_RIGHT:
+			if(mouse_op_.hover && mouse_op_.hover->isNode()) {
+				mouse_op_.pressed_state = MouseOperation::STATE_GRABBING_COORD;
+			}
+			break;
 	}
-	else {
-		mouse_op_.pressed_state = MouseOperation::STATE_MAKING_RECT;
+	switch(mouse_op_.pressed_state) {
+		case MouseOperation::STATE_GRABBING_VERTEX:
+		case MouseOperation::STATE_GRABBING_COORD: {
+			const auto &it = selected_.insert(mouse_op_.hover);
+			if(it.second) {
+				if(!isMultiSelect() && !isAdditive()) {
+					selected_.clear();
+					selected_.insert(mouse_op_.hover);
+				}
+			}
+			else {
+				if(isMultiSelect()) {
+					selected_.erase(mouse_op_.hover);
+					mouse_op_.pressed_state = MouseOperation::STATE_NONE;
+				}
+			}
+			if(isGrabbingVertex() || isGrabbingCoord()) {
+				for(auto &p : selected_) {
+					mouse_op_.edit.push_back(p);
+				}
+				mouse_op_.hover = NULL;
+			}
+		}	break;
+		default:
+			break;
 	}
 }
 void Controller::mouseReleased(ofMouseEventArgs &args)
@@ -159,20 +197,22 @@ void Controller::mouseDragged(ofMouseEventArgs &args)
 			mouse_op_.inside_rect.insert(mouse_op_.inside_rect.end(), hit.begin(), hit.end());
 		}
 	}
-	else if(isGrabbing()) {
+	else if(isGrabbingVertex() || isGrabbingCoord()) {
 		ofVec2f delta = args-mouse_op_.pressed_pos;
 		if(isSlide()) {
 			delta.x = abs(delta.x)<abs(delta.y)?0:delta.x;
 			delta.y = abs(delta.y)<abs(delta.x)?0:delta.y;
 		}
 		for(auto &work : mouse_op_.edit) {
-			if(isEditCoord()) {
-				work.setCoordMove(delta*screen_to_coord_);
-				work.resetVertex();
-			}
-			else if(isEditVertex()) {
-				work.setVertexMove(delta);
-				work.resetCoord();
+			if(work.first->isNode()) {
+				if(isGrabbingCoord()) {
+					work.setCoordMove(delta*screen_to_coord_);
+					work.resetVertex();
+				}
+				else if(isGrabbingVertex()) {
+					work.setVertexMove(delta);
+					work.resetCoord();
+				}
 			}
 		}
 	}
@@ -196,10 +236,7 @@ void Controller::keyPressed(ofKeyEventArgs &args)
 		case OF_KEY_RIGHT:	delta = ofVec2f(1, 0); break;
 	}
 	for(auto &p : selected_) {
-		if(isEditCoord()) {
-			PointHelper(p).moveCoord(delta*(isArrowKeyJump()?10:1)*screen_to_coord_);
-		}
-		else if(isEditVertex()) {
+		if(p->isNode()) {
 			PointHelper(p).moveVertex(delta*(isArrowKeyJump()?10:1));
 		}
 	}
