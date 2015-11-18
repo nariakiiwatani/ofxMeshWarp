@@ -61,8 +61,7 @@ namespace Editor {
 			vector<PointHelper> edit;
 			enum {
 				STATE_NONE,
-				STATE_GRABBING_VERTEX,
-				STATE_GRABBING_COORD,
+				STATE_GRABBING,
 				STATE_MAKING_RECT,
 			} pressed_state;
 		} mouse_op_;
@@ -70,8 +69,7 @@ namespace Editor {
 		float point_size_;
 		float screen_to_coord_;
 		
-		bool isGrabbingVertex() const { return mouse_op_.pressed_state==MouseOperation::STATE_GRABBING_VERTEX; }
-		bool isGrabbingCoord() const { return mouse_op_.pressed_state==MouseOperation::STATE_GRABBING_COORD; }
+		bool isGrabbing() const { return mouse_op_.pressed_state==MouseOperation::STATE_GRABBING; }
 		bool isMakingRect() const { return mouse_op_.pressed_state==MouseOperation::STATE_MAKING_RECT; }
 		bool isToggleNode() const { return ofGetKeyPressed(OF_KEY_ALT); }
 		bool isSlide() const { return ofGetKeyPressed(OF_KEY_SHIFT); }
