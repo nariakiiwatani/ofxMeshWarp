@@ -10,7 +10,7 @@ Controller::Controller()
 	point_size_ = 10;
 	screen_to_coord_ = 1/100.f;
 	clear();
-	enable();
+//	enable();
 }
 Controller::~Controller()
 {
@@ -162,20 +162,24 @@ void Controller::mouseReleased(ofMouseEventArgs &args)
 		mouse_op_.edit.clear();
 	}
 	mouse_op_.pressed_state = MouseOperation::STATE_NONE;
-	mouseMoved(args);
+	mouse_op_.hover = getHit(args);
 }
 void Controller::mouseMoved(ofMouseEventArgs &args)
 {
-	mouse_op_.hover = NULL;
 	mouse_op_.pos = args;
+	mouse_op_.hover = getHit(args);
+}
+MeshPoint* Controller::getHit(const ofVec2f &test) const
+{
 	for(auto &mesh : meshes_) {
 		MeshHelper m(mesh);
-		if(MeshPoint *hover = MeshHelper(mesh).getHit(args, point_size_)) {
-			mouse_op_.hover = hover;
-			break;
+		if(MeshPoint *hover = MeshHelper(mesh).getHit(test, point_size_)) {
+			return hover;
 		}
 	}
+	return NULL;
 }
+
 void Controller::mouseDragged(ofMouseEventArgs &args)
 {
 	mouse_op_.pos = args;
@@ -239,6 +243,7 @@ void Controller::keyPressed(ofKeyEventArgs &args)
 				m->solve();
 			}
 		}
+		mouse_op_.hover = getHit(mouse_op_.pos);
 	}
 }
 void Controller::keyReleased(ofKeyEventArgs &args)

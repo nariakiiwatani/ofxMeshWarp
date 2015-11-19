@@ -76,6 +76,8 @@ namespace Editor {
 		bool isAdditive() const { return ofGetKeyPressed(OF_KEY_SHIFT); }
 		bool isMultiSelect() const { return ofGetKeyPressed(OF_KEY_COMMAND); }
 		bool isArrowKeyJump() const { return ofGetKeyPressed(OF_KEY_SHIFT); }
+		
+		MeshPoint* getHit(const ofVec2f &test) const;
 	};
 }
 }}

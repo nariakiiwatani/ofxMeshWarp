@@ -72,8 +72,13 @@ void Mesh::reset(float w, float h)
 		ofVec2f coord = ofVec2f(i%div_x_,i/div_x_)/ofVec2f(div_x_-1,div_y_-1);
 		point.setCoord(coord);
 		point.setPoint(coord*ofVec2f(w,h));
+		point.setNode(false);
 		indices_.push_back(i);
 	}
+	mesh_[getIndex(0,0)].setNode(true);
+	mesh_[getIndex(div_x_-1,0)].setNode(true);
+	mesh_[getIndex(0,div_y_-1)].setNode(true);
+	mesh_[getIndex(div_x_-1,div_y_-1)].setNode(true);
 }
 void Mesh::solve()
 {
