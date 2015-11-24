@@ -2,13 +2,7 @@
 #include "ofTexture.h"
 
 using namespace ofx::MeshWarp;
-Mesh::Mesh()
-:uv_size_(1,1)
-{
-}
-Mesh::~Mesh()
-{
-}
+
 void Mesh::setup(int div_x, int div_y, float w, float h)
 {
 	if(div_x < 1 || div_y < 1) {

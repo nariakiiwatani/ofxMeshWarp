@@ -53,9 +53,9 @@ namespace Editor {
 	private:
 		set<Mesh*> meshes_;
 		
-		bool is_enabled_;
+		bool is_enabled_ = false;
 		struct MouseOperation {
-			MeshPoint *hover;
+			MeshPoint *hover = nullptr;
 			vector<MeshPoint*> inside_rect;
 			ofVec2f pressed_pos, pos;
 			vector<PointHelper> edit;
@@ -63,11 +63,11 @@ namespace Editor {
 				STATE_NONE,
 				STATE_GRABBING,
 				STATE_MAKING_RECT,
-			} pressed_state;
+			} pressed_state = STATE_NONE;
 		} mouse_op_;
 		set<MeshPoint*> selected_;
-		float point_size_;
-		float screen_to_coord_;
+		float point_size_ = 10;
+		float screen_to_coord_ = 1/100.f;
 		
 		bool isGrabbing() const { return mouse_op_.pressed_state==MouseOperation::STATE_GRABBING; }
 		bool isMakingRect() const { return mouse_op_.pressed_state==MouseOperation::STATE_MAKING_RECT; }

@@ -9,9 +9,6 @@ namespace ofx{namespace MeshWarp{
 class MeshPoint
 {
 public:
-	MeshPoint()
-	:point_(0,0,0),coord_(0,0),normal_(0,0,1),color_(ofColor::white),is_node_(true)
-	{}
 	static MeshPoint getLerped(const MeshPoint &a, const MeshPoint &b, float mix) {
 		MeshPoint ret;
 		ret.point_ = a.point_.getInterpolated(b.point_, mix);
@@ -46,19 +43,17 @@ public:
 	}
 
 private:
-	ofVec3f point_;
-	ofVec2f coord_;
-	ofVec3f normal_;
-	ofColor color_;
-	bool is_node_;
+	ofVec3f point_ = ofVec3f(0,0,0);
+	ofVec2f coord_ = ofVec2f(0,0);
+	ofVec3f normal_ = ofVec3f(0,0,1);
+	ofColor color_ = ofColor::white;
+	bool is_node_ = true;
 };
 
 
 class Mesh
 {
 public:
-	Mesh();
-	~Mesh();
 	void setup(int div_x, int div_y, float w, float h);
 	void setTexCoordSize(float u, float v);
 	void divideX(int pos);
@@ -73,7 +68,7 @@ public:
 	const ofVec2f& getTexCoordSize() { return uv_size_; }
 private:
 	int div_x_, div_y_;
-	ofVec2f uv_size_;
+	ofVec2f uv_size_ = ofVec2f(1,1);
 	vector<int> indices_;
 	vector<MeshPoint> mesh_;	
 	int getIndex(int x, int y) const { return indices_[y*div_x_+x]; }

@@ -6,10 +6,6 @@ using namespace ofx::MeshWarp::Editor;
 
 Controller::Controller()
 {
-	is_enabled_ = false;
-	point_size_ = 10;
-	screen_to_coord_ = 1/100.f;
-	clear();
 //	enable();
 }
 Controller::~Controller()
@@ -29,7 +25,7 @@ void Controller::disable()
 	if(is_enabled_) {
 		ofUnregisterMouseEvents(this);
 		ofUnregisterKeyEvents(this);
-		mouse_op_.hover = NULL;
+		mouse_op_.hover = nullptr;
 		mouse_op_.inside_rect.clear();
 		mouse_op_.edit.clear();
 		selected_.clear();
@@ -43,7 +39,7 @@ void Controller::add(Mesh *mesh)
 }
 void Controller::clear()
 {
-	mouse_op_.hover = NULL;
+	mouse_op_.hover = nullptr;
 	mouse_op_.inside_rect.clear();
 	mouse_op_.edit.clear();
 	selected_.clear();
@@ -137,7 +133,7 @@ void Controller::mousePressed(ofMouseEventArgs &args)
 				for(auto &p : selected_) {
 					mouse_op_.edit.push_back(p);
 				}
-				mouse_op_.hover = NULL;
+				mouse_op_.hover = nullptr;
 			}
 		}	break;
 		default:
@@ -177,7 +173,7 @@ MeshPoint* Controller::getHit(const ofVec2f &test) const
 			return hover;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 void Controller::mouseDragged(ofMouseEventArgs &args)
@@ -256,13 +252,13 @@ MeshPoint* MeshHelper::getHit(const ofVec2f &test, float room, int index) const
 	const vector<MeshPoint*> &points = target_->getPoints();
 	for(auto &p : points) {
 		if(index < 0) {
-			return NULL;
+			return nullptr;
 		}
 		if(test.squareDistance(p->point()) < room*room && index-- == 0) {
 			return p;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 vector<MeshPoint*> MeshHelper::getHit(const ofRectangle &test) const
 {
