@@ -26,8 +26,8 @@ public:
 	void setCoord(const ofVec2f &coord) { coord_=coord; }
 	void setNormal(const ofVec3f &normal) { normal_=normal; }
 	void setColor(const ofColor &color) { color_=color; }
-	void setNode(bool set) { is_node_=set; }
-	void toggleNode() { is_node_^=true; }
+	void setNodal(bool set) { is_node_=set; }
+	void toggleNodal() { is_node_^=true; }
 	
 	void glPoint() {
 		glColor4ubv(&color_[0]);

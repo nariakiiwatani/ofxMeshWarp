@@ -66,13 +66,13 @@ void Mesh::reset(float w, float h)
 		ofVec2f coord = ofVec2f(i%div_x_,i/div_x_)/ofVec2f(div_x_-1,div_y_-1);
 		point.setCoord(coord);
 		point.setPoint(coord*ofVec2f(w,h));
-		point.setNode(false);
+		point.setNodal(false);
 		indices_.push_back(i);
 	}
-	mesh_[getIndex(0,0)].setNode(true);
-	mesh_[getIndex(div_x_-1,0)].setNode(true);
-	mesh_[getIndex(0,div_y_-1)].setNode(true);
-	mesh_[getIndex(div_x_-1,div_y_-1)].setNode(true);
+	mesh_[getIndex(0,0)].setNodal(true);
+	mesh_[getIndex(div_x_-1,0)].setNodal(true);
+	mesh_[getIndex(0,div_y_-1)].setNodal(true);
+	mesh_[getIndex(div_x_-1,div_y_-1)].setNodal(true);
 }
 void Mesh::solve()
 {
@@ -87,7 +87,7 @@ void Mesh::solve()
 					MeshPoint *p0 = work[0];
 					for(int w = 1, num = work.size(); w < num; ++w) {
 						*work[w] = MeshPoint::getLerped(*p0, *p1, w/(float)num);
-						work[w]->setNode(false);
+						work[w]->setNodal(false);
 					}
 				}
 				work.clear();
@@ -106,7 +106,7 @@ void Mesh::solve()
 					MeshPoint *p0 = work[0];
 					for(int w = 1, num = work.size(); w < num; ++w) {
 						*work[w] = MeshPoint::getLerped(*p0, *p1, w/(float)num);
-						work[w]->setNode(false);
+						work[w]->setNodal(false);
 					}
 				}
 				work.clear();

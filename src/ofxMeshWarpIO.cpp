@@ -20,7 +20,7 @@ int PointHelper::set(const char *buffer)
 	target_->setCoord(data->coord);
 	target_->setNormal(data->normal);
 	target_->setColor(data->color);
-	target_->setNode(data->is_node);
+	target_->setNodal(data->is_node);
 	return sizeof(PointData);
 }
 void MeshHelper::get(ofBuffer &buffer) const

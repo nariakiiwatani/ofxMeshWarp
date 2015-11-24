@@ -123,9 +123,9 @@ void Controller::mousePressed(ofMouseEventArgs &args)
 			}
 			if(isToggleNode()) {
 				bool set = !mouse_op_.hover->isNode();
-				mouse_op_.hover->setNode(set);
+				mouse_op_.hover->setNodal(set);
 				for(auto &p : selected_) {
-					p->setNode(set);
+					p->setNodal(set);
 				}
 				mouse_op_.pressed_state = MouseOperation::STATE_NONE;
 			}
