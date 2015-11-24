@@ -4,10 +4,10 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 	ofLoadImage(tex_, "of.png");
-	mesh_ = new ofxMeshWarp();
+	mesh_ = shared_ptr<ofxMeshWarp>(new ofxMeshWarp());
 	mesh_->setup(4,4,512,512);
 	mesh_->setTexCoordSize(tex_.getWidth(), tex_.getHeight());
-	controller_.add(mesh_);
+	controller_.add(mesh_.get());
 	controller_.enable();
 }
 
@@ -29,7 +29,7 @@ void ofApp::keyPressed(int key){
 	switch(key) {
 		case 's': {
 			ofxMeshWarpSave saver;
-			saver.addMesh(mesh_);
+			saver.addMesh(mesh_.get());
 			saver.save("hoge.txt");
 		}	break;
 		case 'l': {
@@ -37,9 +37,8 @@ void ofApp::keyPressed(int key){
 			const vector<ofxMeshWarp*> &result = loader.load("hoge.txt");
 			if(!result.empty()) {
 				controller_.clear();
-				delete mesh_;
-				mesh_ = result[0];
-				controller_.add(mesh_);
+				mesh_ = shared_ptr<ofxMeshWarp>(result[0]);
+				controller_.add(mesh_.get());
 			}
 		}	break;
 	}
