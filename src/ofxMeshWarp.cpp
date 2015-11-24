@@ -1,20 +1,17 @@
 #include "ofxMeshWarp.h"
 #include "ofTexture.h"
+#include <numeric>
 
 using namespace ofx::MeshWarp;
 
 void Mesh::setup(int div_x, int div_y, float w, float h)
 {
 	if(div_x < 1 || div_y < 1) {
-		ofLogError("div_x and div_y must be bigger than 1");
+		ofLogError(__FILE__, "div_x and div_y must be bigger than 1");
 		return;
 	}
 	div_x_ = div_x;
 	div_y_ = div_y;
-	mesh_.clear();
-	for(int i = 0, num = div_x_*div_y_; i < num; ++i) {
-		mesh_.push_back(MeshPoint());
-	}
 	reset(w,h);
 }
 void Mesh::setTexCoordSize(float u, float v)
@@ -22,10 +19,10 @@ void Mesh::setTexCoordSize(float u, float v)
 	uv_size_.set(u,v);
 }
 
-void Mesh::divideX(int pos)
+void Mesh::divideCol(int pos, float ratio)
 {
-	if(pos >= div_x_-1) {
-		ofLogError("cannot divide by bigger index than div_x_");
+	if(pos < 0 || div_x_-1 <= pos) {
+		ofLogError(__FILE__, "index out of bounds: %d", pos);
 		return;
 	}
 	vector<int>indices = indices_;
@@ -33,17 +30,18 @@ void Mesh::divideX(int pos)
 	for(int y = 0; y < div_y_; ++y) {
 		MeshPoint &a = mesh_[getIndex(pos,y)];
 		MeshPoint &b = mesh_[getIndex(pos+1,y)];
-		MeshPoint point = MeshPoint(MeshPoint::getLerped(a, b, 0.5f));
+		MeshPoint point = MeshPoint(MeshPoint::getLerped(a, b, ratio));
+		point.setNodal(y==0||y==div_y_-1);
 		it = indices.insert(it, mesh_.size())+div_x_+1;
 		mesh_.push_back(point);
 	}
 	indices_ = indices;
 	++div_x_;
 }
-void Mesh::divideY(int pos)
+void Mesh::divideRow(int pos, float ratio)
 {
-	if(pos >= div_y_-1) {
-		ofLogError("cannot divide by bigger index than div_y_");
+	if(pos < 0 || div_x_-1 <= pos) {
+		ofLogError(__FILE__, "index out of bounds: %d", pos);
 		return;
 	}
 	vector<int>indices = indices_;
@@ -51,24 +49,58 @@ void Mesh::divideY(int pos)
 	for(int x = 0; x < div_x_; ++x) {
 		MeshPoint &a = mesh_[getIndex(x,pos)];
 		MeshPoint &b = mesh_[getIndex(x,pos+1)];
-		MeshPoint point = MeshPoint(MeshPoint::getLerped(a, b, 0.5f));
+		MeshPoint point = MeshPoint(MeshPoint::getLerped(a, b, ratio));
+		point.setNodal(x==0||x==div_x_-1);
 		it = indices.insert(it, mesh_.size())+1;
 		mesh_.push_back(point);
 	}
 	indices_ = indices;
 	++div_y_;
 }
+void Mesh::reduceCol(int pos)
+{
+	if(div_x_ <= 2) {
+		ofLogError(__FILE__, "cannot reduce col anymore.");
+		return;
+	}
+	if(pos < 0 || div_x_ <= pos) {
+		ofLogError(__FILE__, "index out of bounds: %d", pos);
+		return;
+	}
+	for(int i = div_y_; --i >= 0;) {
+		int index = i*div_x_+pos;
+		indices_.erase(indices_.begin()+index);
+	}
+	--div_x_;
+}
+void Mesh::reduceRow(int pos)
+{
+	if(div_y_ <= 2) {
+		ofLogError(__FILE__, "cannot reduce row anymore.");
+		return;
+	}
+	if(pos < 0 || div_y_ <= pos) {
+		ofLogError(__FILE__, "index out of bounds: %d", pos);
+		return;
+	}
+	auto from = indices_.begin()+pos*div_x_;
+	auto to = from+div_x_;
+	indices_.erase(from, to);
+	--div_y_;
+}
 void Mesh::reset(float w, float h)
 {
-	indices_.clear();
-	for(int i = 0, num = div_x_*div_y_; i < num; ++i) {
+	int num = div_x_*div_y_;
+	mesh_.resize(num);
+	for(int i = 0; i < num; ++i) {
 		MeshPoint &point = mesh_[i];
 		ofVec2f coord = ofVec2f(i%div_x_,i/div_x_)/ofVec2f(div_x_-1,div_y_-1);
 		point.setCoord(coord);
 		point.setPoint(coord*ofVec2f(w,h));
 		point.setNodal(false);
-		indices_.push_back(i);
 	}
+	indices_.resize(num);
+	iota(indices_.begin(),indices_.end(), 0);
 	mesh_[getIndex(0,0)].setNodal(true);
 	mesh_[getIndex(div_x_-1,0)].setNodal(true);
 	mesh_[getIndex(0,div_y_-1)].setNodal(true);
@@ -161,6 +193,20 @@ void Mesh::solve()
 			}
 		}
 	}
+}
+
+void Mesh::gc()
+{
+	if(mesh_.size() == indices_.size()) {
+		ofLogNotice(__FILE__, "no need for gc-ing");
+		return;
+	}
+	vector<MeshPoint> neu;
+	for(auto &i : indices_) {
+		neu.push_back(mesh_[i]);
+	}
+	neu.swap(mesh_);
+	iota(indices_.begin(),indices_.end(), 0);
 }
 
 vector<MeshPoint*> Mesh::getPoints()

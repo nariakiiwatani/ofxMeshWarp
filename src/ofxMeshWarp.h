@@ -56,8 +56,10 @@ class Mesh
 public:
 	void setup(int div_x, int div_y, float w, float h);
 	void setTexCoordSize(float u, float v);
-	void divideX(int pos);
-	void divideY(int pos);
+	void divideCol(int pos, float ratio);
+	void divideRow(int pos, float ratio);
+	void reduceCol(int pos);
+	void reduceRow(int pos);
 	void reset(float w, float h);
 	void solve();
 	void drawMesh();
@@ -66,6 +68,7 @@ public:
 	int getDivX() { return div_x_; }
 	int getDivY() { return div_y_; }
 	const ofVec2f& getTexCoordSize() { return uv_size_; }
+	void gc();
 private:
 	int div_x_, div_y_;
 	ofVec2f uv_size_ = ofVec2f(1,1);

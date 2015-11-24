@@ -27,9 +27,13 @@ If a point is not nodal, you cannot but it will be controled by mood.
 ### Save/Load
 See example
 
-### dividing mesh
-Mesh dividing function is already implemented but interface is not yet.  
-I haven't come up with any good idea of it. XD  
+### dividing/reducing col/row
+Mesh dividing and reducing functions are already implemented but interface is not yet.  
+I haven't come up with any good ideas for it. XD  
+
+_**warning**  
+Dividing mesh allocates memory for new points but reducing doesn't free them.  
+So if you call divide/reduce many times, you may need to call `ofxMeshWarp::gc()` on reasonable time._
 
 ### Creating you own controller
 Since some of the functions of ofxMeshWarpController are marked virtual, you can create your own controller.  
@@ -37,8 +41,7 @@ It means you can use it with your confortable key bindings.
 If you created better bindings especially on other platforms, please send PR!
 
 ## todo
-- dividing interface  
-- erasing implementation and interface  
+- dividing/reducing interface  
 - exporting as ofMesh(if needed)  
 
 ## Tested on
