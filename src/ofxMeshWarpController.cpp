@@ -110,13 +110,13 @@ void Controller::mousePressed(ofMouseEventArgs &args)
 		case MouseOperation::STATE_GRABBING: {
 			const auto &it = selected_.insert(mouse_op_.hover);
 			if(it.second) {
-				if(!isMultiSelect() && !isAdditive()) {
+				if(!isAlternative() && !isAdditive()) {
 					selected_.clear();
 					selected_.insert(mouse_op_.hover);
 				}
 			}
 			else {
-				if(isMultiSelect()) {
+				if(isAlternative()) {
 					selected_.erase(mouse_op_.hover);
 					mouse_op_.pressed_state = MouseOperation::STATE_NONE;
 				}
@@ -143,12 +143,12 @@ void Controller::mousePressed(ofMouseEventArgs &args)
 void Controller::mouseReleased(ofMouseEventArgs &args)
 {
 	if(isMakingRect()) {
-		if(!isMultiSelect() && !isAdditive()) {
+		if(!isAlternative() && !isAdditive()) {
 			selected_.clear();
 		}
 		for(auto &p : mouse_op_.inside_rect) {
 			const auto &it = selected_.insert(p);
-			if(isMultiSelect() && !it.second) {
+			if(isAlternative() && !it.second) {
 				selected_.erase(it.first);
 			}
 		}

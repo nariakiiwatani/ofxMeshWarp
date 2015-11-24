@@ -74,7 +74,7 @@ namespace Editor {
 		virtual bool isToggleNode() const { return ofGetKeyPressed(OF_KEY_ALT); }
 		virtual bool isSlide() const { return ofGetKeyPressed(OF_KEY_SHIFT); }
 		virtual bool isAdditive() const { return ofGetKeyPressed(OF_KEY_SHIFT); }
-		virtual bool isMultiSelect() const { return ofGetKeyPressed(OF_KEY_COMMAND); }
+		virtual bool isAlternative() const { return ofGetKeyPressed(OF_KEY_COMMAND); }
 		virtual bool isArrowKeyJump() const { return ofGetKeyPressed(OF_KEY_SHIFT); }
 		virtual bool isEditCoord() const { return ofGetKeyPressed(OF_KEY_ALT); }
 		virtual bool isEditVertex() const { return !ofGetKeyPressed(OF_KEY_ALT); }
