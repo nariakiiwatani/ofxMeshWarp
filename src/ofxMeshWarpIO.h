@@ -17,6 +17,7 @@ namespace IO {
 			ofVec2f coord;
 			ofVec3f normal;
 			ofColor color;
+			bool is_node;
 		};
 	};
 	class MeshHelper {
@@ -33,11 +34,18 @@ namespace IO {
 	};
 	class Saver {
 	public:
-		Saver(Mesh *mesh, string filename);
+		void addMesh(Mesh *mesh);
+		void addMeshes(vector<Mesh*> &mesh);
+		void save(const string &filename);
+		void save(ofBuffer &buffer);
+	private:
+		vector<Mesh*> meshes_;
 	};
 	class Loader {
 	public:
-		Loader(Mesh *mesh, string filename);
+		vector<Mesh*> load(const string &filename);
+		vector<Mesh*> load(const ofBuffer &buffer);
+		vector<Mesh*> load(const char *data, size_t size);
 	};
 }
 

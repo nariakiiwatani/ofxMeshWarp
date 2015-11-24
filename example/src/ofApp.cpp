@@ -4,9 +4,11 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 	ofLoadImage(tex_, "of.png");
-	mesh_.setup(4,4,512,512);
-	mesh_.setTexCoordSize(tex_.getWidth(), tex_.getHeight());
-	controller_.add(&mesh_);
+	mesh_ = new ofxMeshWarp();
+	mesh_->setup(4,4,512,512);
+	mesh_->setTexCoordSize(tex_.getWidth(), tex_.getHeight());
+	controller_.add(mesh_);
+	controller_.enable();
 }
 
 //--------------------------------------------------------------
@@ -17,7 +19,7 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
 	tex_.bind();
-	mesh_.drawMesh();
+	mesh_->drawMesh();
 	tex_.unbind();
 	controller_.draw();
 }
@@ -25,14 +27,21 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
 	switch(key) {
-		case 's':
-			ofxMeshWarpSave(&mesh_, "hoge.txt");
-			break;
-		case 'l':
-			controller_.clear();
-			ofxMeshWarpLoad(&mesh_, "hoge.txt");
-			controller_.add(&mesh_);
-			break;
+		case 's': {
+			ofxMeshWarpSave saver;
+			saver.addMesh(mesh_);
+			saver.save("hoge.txt");
+		}	break;
+		case 'l': {
+			ofxMeshWarpLoad loader;
+			const vector<ofxMeshWarp*> &result = loader.load("hoge.txt");
+			if(!result.empty()) {
+				controller_.clear();
+				delete mesh_;
+				mesh_ = result[0];
+				controller_.add(mesh_);
+			}
+		}	break;
 	}
 }
 
