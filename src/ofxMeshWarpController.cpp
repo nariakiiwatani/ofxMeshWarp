@@ -196,13 +196,13 @@ void Controller::mouseDragged(ofMouseEventArgs &args)
 		bool moved_any = false;
 		for(auto &work : mouse_op_.edit) {
 			if(work.first->isNode()) {
+				if(isEditVertex()) {
+					work.setVertexMove(delta);
+					work.resetCoord();
+				}
 				if(isEditCoord()) {
 					work.setCoordMove(delta*screen_to_coord_);
 					work.resetVertex();
-				}
-				else {
-					work.setVertexMove(delta);
-					work.resetCoord();
 				}
 				moved_any = true;
 			}
@@ -236,11 +236,11 @@ void Controller::keyPressed(ofKeyEventArgs &args)
 		bool moved_any = false;
 		for(auto &p : selected_) {
 			if(p->isNode()) {
-				if(isEditCoord()) {
-					PointHelper(p).moveCoord(delta*(isArrowKeyJump()?10:1)*screen_to_coord_);
-				}
-				else {
+				if(isEditVertex()) {
 					PointHelper(p).moveVertex(delta*(isArrowKeyJump()?10:1));
+				}
+				if(isEditCoord()){
+					PointHelper(p).moveCoord(delta*(isArrowKeyJump()?10:1)*screen_to_coord_);
 				}
 				moved_any = true;
 			}

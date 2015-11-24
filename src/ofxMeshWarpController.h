@@ -41,15 +41,15 @@ namespace Editor {
 		bool isEnabled() { return is_enabled_; }
 		void draw();
 		
-		void mousePressed(ofMouseEventArgs &args);
-		void mouseReleased(ofMouseEventArgs &args);
-		void mouseMoved(ofMouseEventArgs &args);
-		void mouseDragged(ofMouseEventArgs &args);
-		void mouseScrolled(ofMouseEventArgs &args);
-		void mouseEntered(ofMouseEventArgs &args);
-		void mouseExited(ofMouseEventArgs &args);
-		void keyPressed(ofKeyEventArgs &args);
-		void keyReleased(ofKeyEventArgs &args);
+		virtual void mousePressed(ofMouseEventArgs &args);
+		virtual void mouseReleased(ofMouseEventArgs &args);
+		virtual void mouseMoved(ofMouseEventArgs &args);
+		virtual void mouseDragged(ofMouseEventArgs &args);
+		virtual void mouseScrolled(ofMouseEventArgs &args);
+		virtual void mouseEntered(ofMouseEventArgs &args);
+		virtual void mouseExited(ofMouseEventArgs &args);
+		virtual void keyPressed(ofKeyEventArgs &args);
+		virtual void keyReleased(ofKeyEventArgs &args);
 	private:
 		set<Mesh*> meshes_;
 		
@@ -69,14 +69,15 @@ namespace Editor {
 		float point_size_ = 10;
 		float screen_to_coord_ = 1/100.f;
 		
-		bool isGrabbing() const { return mouse_op_.pressed_state==MouseOperation::STATE_GRABBING; }
-		bool isMakingRect() const { return mouse_op_.pressed_state==MouseOperation::STATE_MAKING_RECT; }
-		bool isToggleNode() const { return ofGetKeyPressed(OF_KEY_ALT); }
-		bool isSlide() const { return ofGetKeyPressed(OF_KEY_SHIFT); }
-		bool isAdditive() const { return ofGetKeyPressed(OF_KEY_SHIFT); }
-		bool isMultiSelect() const { return ofGetKeyPressed(OF_KEY_COMMAND); }
-		bool isArrowKeyJump() const { return ofGetKeyPressed(OF_KEY_SHIFT); }
-		bool isEditCoord() const { return ofGetKeyPressed(OF_KEY_ALT); }
+		virtual bool isGrabbing() const { return mouse_op_.pressed_state==MouseOperation::STATE_GRABBING; }
+		virtual bool isMakingRect() const { return mouse_op_.pressed_state==MouseOperation::STATE_MAKING_RECT; }
+		virtual bool isToggleNode() const { return ofGetKeyPressed(OF_KEY_ALT); }
+		virtual bool isSlide() const { return ofGetKeyPressed(OF_KEY_SHIFT); }
+		virtual bool isAdditive() const { return ofGetKeyPressed(OF_KEY_SHIFT); }
+		virtual bool isMultiSelect() const { return ofGetKeyPressed(OF_KEY_COMMAND); }
+		virtual bool isArrowKeyJump() const { return ofGetKeyPressed(OF_KEY_SHIFT); }
+		virtual bool isEditCoord() const { return ofGetKeyPressed(OF_KEY_ALT); }
+		virtual bool isEditVertex() const { return !ofGetKeyPressed(OF_KEY_ALT); }
 		
 		MeshPoint* getHit(const ofVec2f &test) const;
 	};
