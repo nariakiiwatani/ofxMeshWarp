@@ -286,34 +286,18 @@ void Mesh::drawChildMesh()
 }
 void Mesh::drawWireframe()
 {
-	glBegin(GL_LINE_STRIP);
-	if(ofGetUsingArbTex()) {
-		for(int y = 0; y < div_y_-1; ++y) {
-			for(int x = div_x_; --x>=0;) {
-				mesh_[getIndex(x,y)].glArbPoint(uv_size_);
-			}
-			for(int x = 0; x < div_x_-1; ++x) {
-				mesh_[getIndex(x,y+1)].glArbPoint(uv_size_);
-				mesh_[getIndex(x+1,y)].glArbPoint(uv_size_);
-			}
+	for(int y = 0; y < div_y_; ++y) {
+		glBegin(GL_LINE_STRIP);
+		for(int x = 0; x < div_x_; ++x) {
+			mesh_[getIndex(x,y)].glPoint();
 		}
-		for(int x = div_x_; --x>=0;) {
-			mesh_[getIndex(x,div_y_-1)].glArbPoint(uv_size_);
-		}
+		glEnd();
 	}
-	else {
-		for(int y = 0; y < div_y_-1; ++y) {
-			for(int x = div_x_; --x>=0;) {
-				mesh_[getIndex(x,y)].glPoint();
-			}
-			for(int x = 0; x < div_x_-1; ++x) {
-				mesh_[getIndex(x,y+1)].glPoint();
-				mesh_[getIndex(x+1,y)].glPoint();
-			}
+	for(int x = 0; x < div_x_; ++x) {
+		glBegin(GL_LINE_STRIP);
+		for(int y = 0; y < div_y_; ++y) {
+			mesh_[getIndex(x,y)].glPoint();
 		}
-		for(int x = div_x_; --x>=0;) {
-			mesh_[getIndex(x,div_y_-1)].glPoint();
-		}
+		glEnd();
 	}
-	glEnd();
 }
