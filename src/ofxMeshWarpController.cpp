@@ -92,6 +92,11 @@ void PointController::drawCustom()
 	}
 	ofPopStyle();
 }
+
+bool PointController::isEditing() const
+{
+	return mouse_op_.hover!=nullptr || isGrabbing() || isMakingRect();
+}
 void PointController::mousePressed(ofMouseEventArgs &args)
 {
 	mouse_op_.pressed_pos = args;
@@ -133,6 +138,9 @@ void PointController::mousePressed(ofMouseEventArgs &args)
 					p->setNodal(set);
 				}
 				mouse_op_.pressed_state = MouseOperation::STATE_NONE;
+				for(auto &m : meshes_) {
+					m->solve();
+				}
 			}
 			else if(isGrabbing()) {
 				for(auto &p : selected_) {
@@ -274,28 +282,6 @@ void DivideController::drawCustom()
 	}
 	if(hit_info_.mesh) {
 		const auto &points = hit_info_.mesh->getPoints();
-		/**
-		if(hit_info_.isArea()) {
-			ofPushStyle();
-			ofSetColor(ofColor::green);
-			const auto &box = MeshHelper(hit_info_.mesh).getBox(hit_info_.area_index);
-			glBegin(GL_TRIANGLE_STRIP);
-			for(auto &p : box) {
-				glVertex2f(p->point().x, p->point().y);
-			}
-			glEnd();
-			ofPopStyle();
-		}
-		if(hit_info_.isLine()) {
-			ofPushStyle();
-			ofSetLineWidth(line_hit_size_*2);
-			ofSetColor(ofColor::red);
-			ofDrawLine(points[hit_info_.line_index_0]->point(), points[hit_info_.line_index_1]->point());
-			ofSetColor(ofColor::blue);
-			ofDrawCircle(points[hit_info_.line_index_0]->point().getInterpolated(points[hit_info_.line_index_1]->point(), hit_info_.pos_intersection), 10);
-			ofPopStyle();
-		}
-		/**/
 		if(isDivide()) {
 			ofPushStyle();
 			if(hit_info_.isLineX()) {
@@ -349,6 +335,11 @@ void DivideController::drawCustom()
 	}
 }
 
+bool DivideController::isEditing() const
+{
+	return hit_info_.isLine();
+}
+
 void DivideController::mousePressed(ofMouseEventArgs &args)
 {
 	bool dirty = false;
@@ -373,6 +364,7 @@ void DivideController::mousePressed(ofMouseEventArgs &args)
 		}
 	}
 	if(dirty) {
+		hit_info_.mesh->solve();
 		hit_info_ = getHitInfo(args);
 	}
 }

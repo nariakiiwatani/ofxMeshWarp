@@ -2,7 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxMeshWarp.h"
-#include "ofxMeshWarpController.h"
+#include "ofxMeshWarpManagedController.h"
 
 class ofApp : public ofBaseApp{
 	
@@ -24,8 +24,6 @@ public:
 	void gotMessage(ofMessage msg);
 private:
 	shared_ptr<ofxMeshWarp> mesh_;
-	ofxMeshWarpPointController mover_;
-	ofxMeshWarpMeshDivider divider_;
-	vector<ofxMeshWarpControllerBase*> controllers_;
+	ofxMeshWarpController controller_;
 	ofTexture tex_;
 };

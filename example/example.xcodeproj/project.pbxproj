@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		81252BD91C130FA0003389B1 /* ofxMeshWarpManagedController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 81252BD71C130FA0003389B1 /* ofxMeshWarpManagedController.cpp */; settings = {ASSET_TAGS = (); }; };
 		8138217C1BFAF7F000CD23E3 /* ofxMeshWarpIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8138217A1BFAF7F000CD23E3 /* ofxMeshWarpIO.cpp */; settings = {ASSET_TAGS = (); }; };
 		96C4B5F7DFEE9AF547996035 /* ofxMeshWarpController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F3E52D9101DBB3C5FC82AA7 /* ofxMeshWarpController.cpp */; };
 		C3670937900D24095EF91E8F /* ofxMeshWarp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2833749CEB2CD821978836F4 /* ofxMeshWarp.cpp */; };
@@ -48,6 +49,8 @@
 		1F3E52D9101DBB3C5FC82AA7 /* ofxMeshWarpController.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxMeshWarpController.cpp; path = ../../../addons/ofxMeshWarp/src/ofxMeshWarpController.cpp; sourceTree = SOURCE_ROOT; };
 		2833749CEB2CD821978836F4 /* ofxMeshWarp.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxMeshWarp.cpp; path = ../../../addons/ofxMeshWarp/src/ofxMeshWarp.cpp; sourceTree = SOURCE_ROOT; };
 		5AC8E8B8114B873122F9E155 /* ofxMeshWarpController.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxMeshWarpController.h; path = ../../../addons/ofxMeshWarp/src/ofxMeshWarpController.h; sourceTree = SOURCE_ROOT; };
+		81252BD71C130FA0003389B1 /* ofxMeshWarpManagedController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxMeshWarpManagedController.cpp; sourceTree = "<group>"; };
+		81252BD81C130FA0003389B1 /* ofxMeshWarpManagedController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxMeshWarpManagedController.h; sourceTree = "<group>"; };
 		8138217A1BFAF7F000CD23E3 /* ofxMeshWarpIO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ofxMeshWarpIO.cpp; path = ../src/ofxMeshWarpIO.cpp; sourceTree = "<group>"; };
 		8138217B1BFAF7F000CD23E3 /* ofxMeshWarpIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ofxMeshWarpIO.h; path = ../src/ofxMeshWarpIO.h; sourceTree = "<group>"; };
 		8B1E350E285B120E0743B2F6 /* ofxMeshWarp.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxMeshWarp.h; path = ../../../addons/ofxMeshWarp/src/ofxMeshWarp.h; sourceTree = SOURCE_ROOT; };
@@ -84,6 +87,7 @@
 		5E921ED3A52D6154CEB1DEC0 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				81252BD61C130FA0003389B1 /* utils */,
 				2833749CEB2CD821978836F4 /* ofxMeshWarp.cpp */,
 				8B1E350E285B120E0743B2F6 /* ofxMeshWarp.h */,
 				1F3E52D9101DBB3C5FC82AA7 /* ofxMeshWarpController.cpp */,
@@ -99,6 +103,16 @@
 			children = (
 			);
 			name = local_addons;
+			sourceTree = "<group>";
+		};
+		81252BD61C130FA0003389B1 /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				81252BD71C130FA0003389B1 /* ofxMeshWarpManagedController.cpp */,
+				81252BD81C130FA0003389B1 /* ofxMeshWarpManagedController.h */,
+			);
+			name = utils;
+			path = ../src/utils;
 			sourceTree = "<group>";
 		};
 		BB4B014C10F69532006C3DED /* addons */ = {
@@ -240,6 +254,7 @@
 				8138217C1BFAF7F000CD23E3 /* ofxMeshWarpIO.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
 				C3670937900D24095EF91E8F /* ofxMeshWarp.cpp in Sources */,
+				81252BD91C130FA0003389B1 /* ofxMeshWarpManagedController.cpp in Sources */,
 				96C4B5F7DFEE9AF547996035 /* ofxMeshWarpController.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -43,9 +43,11 @@ namespace Editor {
 		void enable();
 		void disable();
 		void setEnable(bool set) { set?enable():disable(); }
-		bool isEnabled() { return is_enabled_; }
+		bool isEnabled() const { return is_enabled_; }
 		void clear();
 		void draw();
+		
+		virtual bool isEditing() const { return false; }
 		
 		virtual void clearOperation(){};
 
@@ -68,6 +70,8 @@ namespace Editor {
 	{
 	public:
 		void clearOperation();
+		void drawCustom();
+		bool isEditing() const;
 		
 		virtual void mousePressed(ofMouseEventArgs &args);
 		virtual void mouseReleased(ofMouseEventArgs &args);
@@ -79,7 +83,6 @@ namespace Editor {
 		virtual void keyPressed(ofKeyEventArgs &args);
 		virtual void keyReleased(ofKeyEventArgs &args);
 	protected:
-		void drawCustom();
 		struct MouseOperation {
 			MeshPoint *hover = nullptr;
 			vector<MeshPoint*> inside_rect;
@@ -95,8 +98,8 @@ namespace Editor {
 		float point_size_ = 10;
 		float screen_to_coord_ = 1/100.f;
 		
-		virtual bool isGrabbing() const { return mouse_op_.pressed_state==MouseOperation::STATE_GRABBING; }
-		virtual bool isMakingRect() const { return mouse_op_.pressed_state==MouseOperation::STATE_MAKING_RECT; }
+		bool isGrabbing() const { return mouse_op_.pressed_state==MouseOperation::STATE_GRABBING; }
+		bool isMakingRect() const { return mouse_op_.pressed_state==MouseOperation::STATE_MAKING_RECT; }
 		virtual bool isToggleNode() const { return ofGetKeyPressed(OF_KEY_ALT); }
 		virtual bool isSlide() const { return ofGetKeyPressed(OF_KEY_SHIFT); }
 		virtual bool isAdditive() const { return ofGetKeyPressed(OF_KEY_SHIFT); }
@@ -111,6 +114,8 @@ namespace Editor {
 	{
 	public:
 		void clearOperation();
+		void drawCustom();
+		bool isEditing() const;
 		
 		virtual void mousePressed(ofMouseEventArgs &args);
 		virtual void mouseReleased(ofMouseEventArgs &args);
@@ -122,7 +127,6 @@ namespace Editor {
 		virtual void keyPressed(ofKeyEventArgs &args);
 		virtual void keyReleased(ofKeyEventArgs &args);
 	protected:
-		void drawCustom();
 		float line_hit_size_ = 10;
 		struct HitInfo {
 			Mesh *mesh = nullptr;
