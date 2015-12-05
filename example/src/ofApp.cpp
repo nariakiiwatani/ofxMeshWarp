@@ -7,13 +7,19 @@ void ofApp::setup(){
 	mesh_ = shared_ptr<ofxMeshWarp>(new ofxMeshWarp());
 	mesh_->setup(4,4,512,512);
 	mesh_->setTexCoordSize(tex_.getWidth(), tex_.getHeight());
-	controller_.add(mesh_.get());
-	controller_.enable();
+	controllers_.emplace_back(&mover_);
+	controllers_.emplace_back(&divider_);
+	
+	for(auto &c : controllers_) {
+		c->add(mesh_.get());
+		c->disable();
+	}
+	mover_.enable();
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-
+	ofSetWindowTitle(ofToString(ofGetFrameRate(),2));
 }
 
 //--------------------------------------------------------------
@@ -21,7 +27,11 @@ void ofApp::draw(){
 	tex_.bind();
 	mesh_->drawMesh();
 	tex_.unbind();
-	controller_.draw();
+	for(auto &c : controllers_) {
+		if(c->isEnabled()) {
+			c->draw();
+		}
+	}
 }
 
 //--------------------------------------------------------------
@@ -36,11 +46,19 @@ void ofApp::keyPressed(int key){
 			ofxMeshWarpLoad loader;
 			const vector<ofxMeshWarp*> &result = loader.load("hoge.txt");
 			if(!result.empty()) {
-				controller_.clear();
+				for(auto &c : controllers_) {
+					c->clear();
+				}
 				mesh_ = shared_ptr<ofxMeshWarp>(result[0]);
-				controller_.add(mesh_.get());
+				for(auto &c : controllers_) {
+					c->add(mesh_.get());
+				}
 			}
 		}	break;
+		case OF_KEY_RETURN:
+			mover_.setEnable(!mover_.isEnabled());
+			divider_.setEnable(!mover_.isEnabled());
+			break;
 	}
 }
 

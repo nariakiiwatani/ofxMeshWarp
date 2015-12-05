@@ -24,6 +24,8 @@ public:
 	void gotMessage(ofMessage msg);
 private:
 	shared_ptr<ofxMeshWarp> mesh_;
-	ofxMeshWarpController controller_;
+	ofxMeshWarpPointController mover_;
+	ofxMeshWarpMeshDivider divider_;
+	vector<ofxMeshWarpControllerBase*> controllers_;
 	ofTexture tex_;
 };

@@ -29,22 +29,45 @@ namespace Editor {
 		vector<int> getBoxIndices(int top_left_index) const;
 		bool isHitBox(const ofVec2f &test, int top_left_index) const;
 		bool isHitLine(const ofVec2f &test, int index0, int index1, float room, float &pos) const;
+		vector<MeshPoint*> getColPoints(int point_index) const;
+		vector<MeshPoint*> getRowPoints(int point_index) const;
 	private:
 		Mesh *target_;
 	};
-
-	class PointController
-	{
+	
+	class ControllerBase {
 	public:
-		PointController();
-		~PointController();
+		ControllerBase();
+		~ControllerBase();
 		void add(Mesh *target);
-		void clear();
 		void enable();
 		void disable();
 		void setEnable(bool set) { set?enable():disable(); }
 		bool isEnabled() { return is_enabled_; }
+		void clear();
 		void draw();
+		
+		virtual void clearOperation(){};
+
+		virtual void mousePressed(ofMouseEventArgs &args){}
+		virtual void mouseReleased(ofMouseEventArgs &args){}
+		virtual void mouseMoved(ofMouseEventArgs &args){}
+		virtual void mouseDragged(ofMouseEventArgs &args){}
+		virtual void mouseScrolled(ofMouseEventArgs &args){}
+		virtual void mouseEntered(ofMouseEventArgs &args){}
+		virtual void mouseExited(ofMouseEventArgs &args){}
+		virtual void keyPressed(ofKeyEventArgs &args){}
+		virtual void keyReleased(ofKeyEventArgs &args){}
+	protected:
+		set<Mesh*> meshes_;
+		bool is_enabled_ = false;
+		virtual void drawCustom(){};
+	};
+
+	class PointController : public ControllerBase
+	{
+	public:
+		void clearOperation();
 		
 		virtual void mousePressed(ofMouseEventArgs &args);
 		virtual void mouseReleased(ofMouseEventArgs &args);
@@ -56,9 +79,7 @@ namespace Editor {
 		virtual void keyPressed(ofKeyEventArgs &args);
 		virtual void keyReleased(ofKeyEventArgs &args);
 	protected:
-		set<Mesh*> meshes_;
-		
-		bool is_enabled_ = false;
+		void drawCustom();
 		struct MouseOperation {
 			MeshPoint *hover = nullptr;
 			vector<MeshPoint*> inside_rect;
@@ -86,17 +107,10 @@ namespace Editor {
 		
 		MeshPoint* getHit(const ofVec2f &test) const;
 	};
-	class DivideController {
+	class DivideController  : public ControllerBase
+	{
 	public:
-		DivideController();
-		~DivideController();
-		void add(Mesh *target);
-		void clear();
-		void enable();
-		void disable();
-		void setEnable(bool set) { set?enable():disable(); }
-		bool isEnabled() { return is_enabled_; }
-		void draw();
+		void clearOperation();
 		
 		virtual void mousePressed(ofMouseEventArgs &args);
 		virtual void mouseReleased(ofMouseEventArgs &args);
@@ -108,20 +122,25 @@ namespace Editor {
 		virtual void keyPressed(ofKeyEventArgs &args);
 		virtual void keyReleased(ofKeyEventArgs &args);
 	protected:
-		set<Mesh*> meshes_;
-		bool is_enabled_ = false;
+		void drawCustom();
 		float line_hit_size_ = 10;
 		struct HitInfo {
 			Mesh *mesh = nullptr;
 			int area_index = -1;
 			int line_index_0 = -1, line_index_1 = -1;
 			float pos_intersection = -1;
+			bool isArea() const { return area_index; }
+			bool isLine() const { return line_index_0 != -1 && line_index_1 != -1; }
+			bool isLineX() const { return isLine() && abs(line_index_0-line_index_1)==1; }
+			bool isLineY() const { return isLine() && !isLineX(); }
 		} hit_info_;
 		
+		virtual bool isDivide() const { return !ofGetKeyPressed(OF_KEY_ALT); }
 		virtual bool isReduce() const { return ofGetKeyPressed(OF_KEY_ALT); }
 		HitInfo getHitInfo(const ofVec2f &test);
 	};
 }
 }}
-using ofxMeshWarpController = ofx::MeshWarp::Editor::PointController;
-using ofxMeshWarpDivider = ofx::MeshWarp::Editor::DivideController;
+using ofxMeshWarpControllerBase = ofx::MeshWarp::Editor::ControllerBase;
+using ofxMeshWarpPointController = ofx::MeshWarp::Editor::PointController;
+using ofxMeshWarpMeshDivider = ofx::MeshWarp::Editor::DivideController;

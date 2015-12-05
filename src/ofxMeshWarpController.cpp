@@ -4,15 +4,15 @@
 using namespace ofx::MeshWarp;
 using namespace ofx::MeshWarp::Editor;
 
-PointController::PointController()
+ControllerBase::ControllerBase()
 {
 //	enable();
 }
-PointController::~PointController()
+ControllerBase::~ControllerBase()
 {
 	disable();
 }
-void PointController::enable()
+void ControllerBase::enable()
 {
 	if(!is_enabled_) {
 		ofRegisterMouseEvents(this);
@@ -20,42 +20,47 @@ void PointController::enable()
 		is_enabled_ = true;
 	}
 }
-void PointController::disable()
+void ControllerBase::disable()
 {
 	if(is_enabled_) {
 		ofUnregisterMouseEvents(this);
 		ofUnregisterKeyEvents(this);
-		mouse_op_.hover = nullptr;
-		mouse_op_.inside_rect.clear();
-		mouse_op_.edit.clear();
-		selected_.clear();
-		mouse_op_.pressed_state = MouseOperation::STATE_NONE;
 		is_enabled_ = false;
+		clearOperation();
 	}
 }
-void PointController::add(Mesh *mesh)
+void ControllerBase::add(Mesh *mesh)
 {
 	meshes_.insert(mesh);
 }
-void PointController::clear()
+void ControllerBase::clear()
+{
+	clearOperation();
+	meshes_.clear();
+}
+void ControllerBase::draw()
+{
+	for(auto &mesh : meshes_) {
+		mesh->drawWireframe();
+	}
+	drawCustom();
+}
+// ==========
+void PointController::clearOperation()
 {
 	mouse_op_.hover = nullptr;
 	mouse_op_.inside_rect.clear();
 	mouse_op_.edit.clear();
 	selected_.clear();
 	mouse_op_.pressed_state = MouseOperation::STATE_NONE;
-	meshes_.clear();
 }
-void PointController::draw()
+void PointController::drawCustom()
 {
 	auto drawCircle = [&](MeshPoint* p, float size_add=0) {
 		float size = point_size_*(p->isNode()?1:0.5f)+size_add;
 		ofDrawCircle(p->point(), size);
 	};
 	ofPushStyle();
-	for(auto &mesh : meshes_) {
-		mesh->drawWireframe();
-	}
 	ofSetColor(ofColor::green);
 	ofNoFill();
 	for(auto &mesh : meshes_) {
@@ -258,44 +263,20 @@ void PointController::keyReleased(ofKeyEventArgs &args)
 }
 
 // ==========
-DivideController::DivideController()
+void DivideController::clearOperation()
 {
-	//	enable();
+	hit_info_ = HitInfo();
 }
-DivideController::~DivideController()
+void DivideController::drawCustom()
 {
-	disable();
-}
-void DivideController::enable()
-{
-	if(!is_enabled_) {
-		ofRegisterMouseEvents(this);
-		ofRegisterKeyEvents(this);
-		is_enabled_ = true;
+	for(auto &mesh : meshes_) {
+		mesh->drawWireframe();
 	}
-}
-void DivideController::disable()
-{
-	if(is_enabled_) {
-		ofUnregisterMouseEvents(this);
-		ofUnregisterKeyEvents(this);
-		is_enabled_ = false;
-	}
-}
-void DivideController::add(Mesh *mesh)
-{
-	meshes_.insert(mesh);
-}
-void DivideController::clear()
-{
-	meshes_.clear();
-}
-void DivideController::draw()
-{
 	if(hit_info_.mesh) {
 		const auto &points = hit_info_.mesh->getPoints();
-		ofPushStyle();
-		if(hit_info_.area_index != -1) {
+		/**
+		if(hit_info_.isArea()) {
+			ofPushStyle();
 			ofSetColor(ofColor::green);
 			const auto &box = MeshHelper(hit_info_.mesh).getBox(hit_info_.area_index);
 			glBegin(GL_TRIANGLE_STRIP);
@@ -303,20 +284,97 @@ void DivideController::draw()
 				glVertex2f(p->point().x, p->point().y);
 			}
 			glEnd();
+			ofPopStyle();
 		}
-		if(hit_info_.line_index_0 != -1 && hit_info_.line_index_1 != -1) {
+		if(hit_info_.isLine()) {
+			ofPushStyle();
 			ofSetLineWidth(line_hit_size_*2);
 			ofSetColor(ofColor::red);
 			ofDrawLine(points[hit_info_.line_index_0]->point(), points[hit_info_.line_index_1]->point());
 			ofSetColor(ofColor::blue);
 			ofDrawCircle(points[hit_info_.line_index_0]->point().getInterpolated(points[hit_info_.line_index_1]->point(), hit_info_.pos_intersection), 10);
+			ofPopStyle();
 		}
-		ofPopStyle();
+		/**/
+		if(isDivide()) {
+			ofPushStyle();
+			if(hit_info_.isLineX()) {
+				const auto &points0 = MeshHelper(hit_info_.mesh).getColPoints(hit_info_.line_index_0);
+				const auto &points1 = MeshHelper(hit_info_.mesh).getColPoints(hit_info_.line_index_1);
+				assert(points0.size() == points1.size());
+				ofSetColor(ofColor::green);
+				glBegin(GL_LINE_STRIP);
+				for(int  i = 0, num = points0.size(); i < num; ++i) {
+					ofPoint p = points0[i]->point().getInterpolated(points1[i]->point(), hit_info_.pos_intersection);
+					glVertex2fv(&p[0]);
+				}
+				glEnd();
+			}
+			if(hit_info_.isLineY()) {
+				const auto &points0 = MeshHelper(hit_info_.mesh).getRowPoints(hit_info_.line_index_0);
+				const auto &points1 = MeshHelper(hit_info_.mesh).getRowPoints(hit_info_.line_index_1);
+				assert(points0.size() == points1.size());
+				ofSetColor(ofColor::green);
+				glBegin(GL_LINE_STRIP);
+				for(int  i = 0, num = points0.size(); i < num; ++i) {
+					ofPoint p = points0[i]->point().getInterpolated(points1[i]->point(), hit_info_.pos_intersection);
+					glVertex2fv(&p[0]);
+				}
+				glEnd();
+			}
+			ofPopStyle();
+		}
+		if(isReduce()) {
+			ofPushStyle();
+			if(hit_info_.isLineX()) {
+				const auto &points = MeshHelper(hit_info_.mesh).getRowPoints(hit_info_.line_index_0);
+				ofSetColor(ofColor::red);
+				glBegin(GL_LINE_STRIP);
+				for(auto &p : points) {
+					glVertex2f(p->point().x, p->point().y);
+				}
+				glEnd();
+			}
+			if(hit_info_.isLineY()) {
+				const auto &points = MeshHelper(hit_info_.mesh).getColPoints(hit_info_.line_index_0);
+				ofSetColor(ofColor::red);
+				glBegin(GL_LINE_STRIP);
+				for(auto &p : points) {
+					glVertex2f(p->point().x, p->point().y);
+				}
+				glEnd();
+			}
+			ofPopStyle();
+		}
 	}
 }
 
 void DivideController::mousePressed(ofMouseEventArgs &args)
 {
+	bool dirty = false;
+	if(isDivide()) {
+		if(hit_info_.isLineX()) {
+			hit_info_.mesh->divideCol(hit_info_.line_index_0%hit_info_.mesh->getDivX(), hit_info_.pos_intersection);
+			dirty = true;
+		}
+		if(hit_info_.isLineY()) {
+			hit_info_.mesh->divideRow(hit_info_.line_index_0/hit_info_.mesh->getDivX(), hit_info_.pos_intersection);
+			dirty = true;
+		}
+	}
+	if(isReduce()) {
+		if(hit_info_.isLineX()) {
+			hit_info_.mesh->reduceRow(hit_info_.line_index_0/hit_info_.mesh->getDivX());
+			dirty = true;
+		}
+		if(hit_info_.isLineY()) {
+			hit_info_.mesh->reduceCol(hit_info_.line_index_0%hit_info_.mesh->getDivX());
+			dirty = true;
+		}
+	}
+	if(dirty) {
+		hit_info_ = getHitInfo(args);
+	}
 }
 void DivideController::mouseReleased(ofMouseEventArgs &args)
 {
@@ -464,3 +522,24 @@ bool MeshHelper::isHitLine(const ofVec2f &test, int index0, int index1, float ro
 	return false;
 }
 
+vector<MeshPoint*> MeshHelper::getColPoints(int point_index) const
+{
+	vector<MeshPoint*> ret;
+	int div_x = target_->getDivX();
+	const auto &points = target_->getPoints();
+	for(int index = point_index%div_x, num = points.size(); index < num; index += div_x) {
+		ret.emplace_back(points[index]);
+	}
+	return ret;
+}
+vector<MeshPoint*> MeshHelper::getRowPoints(int point_index) const
+{
+	vector<MeshPoint*> ret;
+	int div_x = target_->getDivX();
+	int start = (point_index/div_x)*div_x;
+	const auto &points = target_->getPoints();
+	for(int index = start; index < start+div_x; ++index) {
+		ret.emplace_back(points[index]);
+	}
+	return ret;
+}

@@ -31,7 +31,6 @@ void Mesh::divideCol(int pos, float ratio)
 		MeshPoint &a = mesh_[getIndex(pos,y)];
 		MeshPoint &b = mesh_[getIndex(pos+1,y)];
 		MeshPoint point = MeshPoint(MeshPoint::getLerped(a, b, ratio));
-		point.setNodal(y==0||y==div_y_-1);
 		it = indices.insert(it, mesh_.size())+div_x_+1;
 		mesh_.push_back(point);
 	}
@@ -50,7 +49,6 @@ void Mesh::divideRow(int pos, float ratio)
 		MeshPoint &a = mesh_[getIndex(x,pos)];
 		MeshPoint &b = mesh_[getIndex(x,pos+1)];
 		MeshPoint point = MeshPoint(MeshPoint::getLerped(a, b, ratio));
-		point.setNodal(x==0||x==div_x_-1);
 		it = indices.insert(it, mesh_.size())+1;
 		mesh_.push_back(point);
 	}
@@ -97,14 +95,9 @@ void Mesh::reset(float w, float h)
 		ofVec2f coord = ofVec2f(i%div_x_,i/div_x_)/ofVec2f(div_x_-1,div_y_-1);
 		point.setCoord(coord);
 		point.setPoint(coord*ofVec2f(w,h));
-		point.setNodal(false);
 	}
 	indices_.resize(num);
 	iota(indices_.begin(),indices_.end(), 0);
-	mesh_[getIndex(0,0)].setNodal(true);
-	mesh_[getIndex(div_x_-1,0)].setNodal(true);
-	mesh_[getIndex(0,div_y_-1)].setNodal(true);
-	mesh_[getIndex(div_x_-1,div_y_-1)].setNodal(true);
 }
 void Mesh::solve()
 {
