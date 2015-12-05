@@ -301,3 +301,17 @@ void Mesh::drawWireframe()
 		glEnd();
 	}
 }
+void Mesh::drawDetailedWireframe()
+{
+	if(child_mesh_resolution_ > 1) {
+		for(int y = 0; y < div_y_-1; ++y) {
+			for(int x = 0; x < div_x_-1; ++x) {
+				Mesh &&mesh = makeChildMesh(x, y, child_mesh_resolution_);
+				mesh.drawWireframe();
+			}
+		}
+	}
+	else {
+		drawWireframe();
+	}
+}

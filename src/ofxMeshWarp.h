@@ -65,6 +65,7 @@ public:
 	void solve();
 	void drawMesh();
 	void drawWireframe();
+	void drawDetailedWireframe();
 	vector<MeshPoint*> getPoints();
 	int getDivX() { return div_x_; }
 	int getDivY() { return div_y_; }
