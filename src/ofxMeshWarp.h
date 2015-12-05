@@ -70,6 +70,7 @@ public:
 	int getDivX() { return div_x_; }
 	int getDivY() { return div_y_; }
 	const ofVec2f& getTexCoordSize() { return uv_size_; }
+	int getChildMeshResolution() { return child_mesh_resolution_; }
 	void gc();
 private:
 	int div_x_, div_y_;

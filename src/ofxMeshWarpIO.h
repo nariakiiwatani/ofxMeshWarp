@@ -28,7 +28,7 @@ namespace IO {
 	private:
 		Mesh *target_;
 		struct MeshData {
-			int divx, divy;
+			int divx, divy, resolution;
 			ofVec2f uv_size;
 		};
 	};

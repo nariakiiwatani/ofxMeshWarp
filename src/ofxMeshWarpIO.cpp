@@ -28,6 +28,7 @@ void MeshHelper::get(ofBuffer &buffer) const
 	MeshData data;
 	data.divx = target_->getDivX();
 	data.divy = target_->getDivY();
+	data.resolution = target_->getChildMeshResolution();
 	data.uv_size = target_->getTexCoordSize();
 	buffer.append((const char*)(&data), sizeof(MeshData));
 	const vector<MeshPoint*> &points = target_->getPoints();
