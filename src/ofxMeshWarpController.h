@@ -3,6 +3,7 @@
 #include "ofEvents.h"
 #include "ofxMeshWarp.h"
 #include "ofRectangle.h"
+#include "ofPolyline.h"
 
 namespace ofx{namespace MeshWarp{
 namespace Editor {
@@ -24,15 +25,19 @@ namespace Editor {
 		MeshHelper(Mesh *m):target_(m){}
 		MeshPoint* getHit(const ofVec2f &test, float room, int index=0) const;
 		vector<MeshPoint*> getHit(const ofRectangle &test) const;
+		vector<MeshPoint*> getBox(int top_left_index) const;
+		vector<int> getBoxIndices(int top_left_index) const;
+		bool isHitBox(const ofVec2f &test, int top_left_index) const;
+		bool isHitLine(const ofVec2f &test, int index0, int index1, float room, float &pos) const;
 	private:
 		Mesh *target_;
 	};
 
-	class Controller
+	class PointController
 	{
 	public:
-		Controller();
-		~Controller();
+		PointController();
+		~PointController();
 		void add(Mesh *target);
 		void clear();
 		void enable();
@@ -81,6 +86,42 @@ namespace Editor {
 		
 		MeshPoint* getHit(const ofVec2f &test) const;
 	};
+	class DivideController {
+	public:
+		DivideController();
+		~DivideController();
+		void add(Mesh *target);
+		void clear();
+		void enable();
+		void disable();
+		void setEnable(bool set) { set?enable():disable(); }
+		bool isEnabled() { return is_enabled_; }
+		void draw();
+		
+		virtual void mousePressed(ofMouseEventArgs &args);
+		virtual void mouseReleased(ofMouseEventArgs &args);
+		virtual void mouseMoved(ofMouseEventArgs &args);
+		virtual void mouseDragged(ofMouseEventArgs &args);
+		virtual void mouseScrolled(ofMouseEventArgs &args);
+		virtual void mouseEntered(ofMouseEventArgs &args);
+		virtual void mouseExited(ofMouseEventArgs &args);
+		virtual void keyPressed(ofKeyEventArgs &args);
+		virtual void keyReleased(ofKeyEventArgs &args);
+	protected:
+		set<Mesh*> meshes_;
+		bool is_enabled_ = false;
+		float line_hit_size_ = 10;
+		struct HitInfo {
+			Mesh *mesh = nullptr;
+			int area_index = -1;
+			int line_index_0 = -1, line_index_1 = -1;
+			float pos_intersection = -1;
+		} hit_info_;
+		
+		virtual bool isReduce() const { return ofGetKeyPressed(OF_KEY_ALT); }
+		HitInfo getHitInfo(const ofVec2f &test);
+	};
 }
 }}
-using ofxMeshWarpController = ofx::MeshWarp::Editor::Controller;
+using ofxMeshWarpController = ofx::MeshWarp::Editor::PointController;
+using ofxMeshWarpDivider = ofx::MeshWarp::Editor::DivideController;

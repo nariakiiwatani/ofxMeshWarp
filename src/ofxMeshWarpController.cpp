@@ -4,15 +4,15 @@
 using namespace ofx::MeshWarp;
 using namespace ofx::MeshWarp::Editor;
 
-Controller::Controller()
+PointController::PointController()
 {
 //	enable();
 }
-Controller::~Controller()
+PointController::~PointController()
 {
 	disable();
 }
-void Controller::enable()
+void PointController::enable()
 {
 	if(!is_enabled_) {
 		ofRegisterMouseEvents(this);
@@ -20,7 +20,7 @@ void Controller::enable()
 		is_enabled_ = true;
 	}
 }
-void Controller::disable()
+void PointController::disable()
 {
 	if(is_enabled_) {
 		ofUnregisterMouseEvents(this);
@@ -33,11 +33,11 @@ void Controller::disable()
 		is_enabled_ = false;
 	}
 }
-void Controller::add(Mesh *mesh)
+void PointController::add(Mesh *mesh)
 {
 	meshes_.insert(mesh);
 }
-void Controller::clear()
+void PointController::clear()
 {
 	mouse_op_.hover = nullptr;
 	mouse_op_.inside_rect.clear();
@@ -46,7 +46,7 @@ void Controller::clear()
 	mouse_op_.pressed_state = MouseOperation::STATE_NONE;
 	meshes_.clear();
 }
-void Controller::draw()
+void PointController::draw()
 {
 	auto drawCircle = [&](MeshPoint* p, float size_add=0) {
 		float size = point_size_*(p->isNode()?1:0.5f)+size_add;
@@ -87,7 +87,7 @@ void Controller::draw()
 	}
 	ofPopStyle();
 }
-void Controller::mousePressed(ofMouseEventArgs &args)
+void PointController::mousePressed(ofMouseEventArgs &args)
 {
 	mouse_op_.pressed_pos = args;
 	mouse_op_.pressed_state = MouseOperation::STATE_NONE;
@@ -140,7 +140,7 @@ void Controller::mousePressed(ofMouseEventArgs &args)
 			break;
 	}
 }
-void Controller::mouseReleased(ofMouseEventArgs &args)
+void PointController::mouseReleased(ofMouseEventArgs &args)
 {
 	if(isMakingRect()) {
 		if(!isAlternative() && !isAdditive()) {
@@ -160,12 +160,12 @@ void Controller::mouseReleased(ofMouseEventArgs &args)
 	mouse_op_.pressed_state = MouseOperation::STATE_NONE;
 	mouse_op_.hover = getHit(args);
 }
-void Controller::mouseMoved(ofMouseEventArgs &args)
+void PointController::mouseMoved(ofMouseEventArgs &args)
 {
 	mouse_op_.pos = args;
 	mouse_op_.hover = getHit(args);
 }
-MeshPoint* Controller::getHit(const ofVec2f &test) const
+MeshPoint* PointController::getHit(const ofVec2f &test) const
 {
 	for(auto &mesh : meshes_) {
 		MeshHelper m(mesh);
@@ -176,7 +176,7 @@ MeshPoint* Controller::getHit(const ofVec2f &test) const
 	return nullptr;
 }
 
-void Controller::mouseDragged(ofMouseEventArgs &args)
+void PointController::mouseDragged(ofMouseEventArgs &args)
 {
 	mouse_op_.pos = args;
 	if(isMakingRect()) {
@@ -214,16 +214,16 @@ void Controller::mouseDragged(ofMouseEventArgs &args)
 		}
 	}
 }
-void Controller::mouseScrolled(ofMouseEventArgs &args)
+void PointController::mouseScrolled(ofMouseEventArgs &args)
 {
 }
-void Controller::mouseEntered(ofMouseEventArgs &args)
+void PointController::mouseEntered(ofMouseEventArgs &args)
 {
 }
-void Controller::mouseExited(ofMouseEventArgs &args)
+void PointController::mouseExited(ofMouseEventArgs &args)
 {
 }
-void Controller::keyPressed(ofKeyEventArgs &args)
+void PointController::keyPressed(ofKeyEventArgs &args)
 {
 	ofVec2f delta;
 	switch(args.key) {
@@ -253,11 +253,135 @@ void Controller::keyPressed(ofKeyEventArgs &args)
 		mouse_op_.hover = getHit(mouse_op_.pos);
 	}
 }
-void Controller::keyReleased(ofKeyEventArgs &args)
+void PointController::keyReleased(ofKeyEventArgs &args)
 {
 }
 
+// ==========
+DivideController::DivideController()
+{
+	//	enable();
+}
+DivideController::~DivideController()
+{
+	disable();
+}
+void DivideController::enable()
+{
+	if(!is_enabled_) {
+		ofRegisterMouseEvents(this);
+		ofRegisterKeyEvents(this);
+		is_enabled_ = true;
+	}
+}
+void DivideController::disable()
+{
+	if(is_enabled_) {
+		ofUnregisterMouseEvents(this);
+		ofUnregisterKeyEvents(this);
+		is_enabled_ = false;
+	}
+}
+void DivideController::add(Mesh *mesh)
+{
+	meshes_.insert(mesh);
+}
+void DivideController::clear()
+{
+	meshes_.clear();
+}
+void DivideController::draw()
+{
+	if(hit_info_.mesh) {
+		const auto &points = hit_info_.mesh->getPoints();
+		ofPushStyle();
+		if(hit_info_.area_index != -1) {
+			ofSetColor(ofColor::green);
+			const auto &box = MeshHelper(hit_info_.mesh).getBox(hit_info_.area_index);
+			glBegin(GL_TRIANGLE_STRIP);
+			for(auto &p : box) {
+				glVertex2f(p->point().x, p->point().y);
+			}
+			glEnd();
+		}
+		if(hit_info_.line_index_0 != -1 && hit_info_.line_index_1 != -1) {
+			ofSetLineWidth(line_hit_size_*2);
+			ofSetColor(ofColor::red);
+			ofDrawLine(points[hit_info_.line_index_0]->point(), points[hit_info_.line_index_1]->point());
+			ofSetColor(ofColor::blue);
+			ofDrawCircle(points[hit_info_.line_index_0]->point().getInterpolated(points[hit_info_.line_index_1]->point(), hit_info_.pos_intersection), 10);
+		}
+		ofPopStyle();
+	}
+}
 
+void DivideController::mousePressed(ofMouseEventArgs &args)
+{
+}
+void DivideController::mouseReleased(ofMouseEventArgs &args)
+{
+}
+void DivideController::mouseMoved(ofMouseEventArgs &args)
+{
+	hit_info_ = getHitInfo(args);
+}
+void DivideController::mouseDragged(ofMouseEventArgs &args)
+{
+}
+void DivideController::mouseScrolled(ofMouseEventArgs &args)
+{
+}
+void DivideController::mouseEntered(ofMouseEventArgs &args)
+{
+}
+void DivideController::mouseExited(ofMouseEventArgs &args)
+{
+}
+void DivideController::keyPressed(ofKeyEventArgs &args)
+{
+}
+void DivideController::keyReleased(ofKeyEventArgs &args)
+{
+}
+DivideController::HitInfo DivideController::getHitInfo(const ofVec2f &test)
+{
+	HitInfo info;
+	bool is_hit = false;
+	for(auto &m : meshes_) {
+		const auto &points = m->getPoints();
+		int div_x = m->getDivX();
+		int div_y = m->getDivY();
+		for(int y = 0; y < div_y-1; ++y) {
+			for(int x = 0; x < div_x-1; ++x) {
+				int index = y*div_x+x;
+				if(MeshHelper(m).isHitBox(test, index)) {
+					info.mesh = m;
+					info.area_index = index;
+					is_hit = true;
+				}
+			}
+		}
+	}
+	if(is_hit) {
+		const auto &indices = MeshHelper(info.mesh).getBoxIndices(info.area_index);
+		assert(indices.size() == 4);
+		auto check = [this,&info,&test](int index0, int index1) {
+			if(MeshHelper(info.mesh).isHitLine(test, index0, index1, line_hit_size_, info.pos_intersection)) {
+				info.line_index_0 = index0; info.line_index_1 = index1;
+				return true;
+			}
+			return false;
+		};
+		if(check(indices[0], indices[1])) return info;
+		if(check(indices[0], indices[2])) return info;
+		if(check(indices[1], indices[3])) return info;
+		if(check(indices[2], indices[3])) return info;
+	}
+	return info;
+}
+
+
+// ==========
 MeshPoint* MeshHelper::getHit(const ofVec2f &test, float room, int index) const
 {
 	const vector<MeshPoint*> &points = target_->getPoints();
@@ -282,3 +406,61 @@ vector<MeshPoint*> MeshHelper::getHit(const ofRectangle &test) const
 	}
 	return ret;
 }
+vector<MeshPoint*> MeshHelper::getBox(int top_left_index) const
+{
+	vector<MeshPoint*> ret;
+	auto indices = getBoxIndices(top_left_index);
+	const auto &points = target_->getPoints();
+	for(auto i : indices) {
+		ret.emplace_back(points[i]);
+	}
+	return ret;
+}
+vector<int> MeshHelper::getBoxIndices(int top_left_index) const
+{
+	vector<int> ret;;
+	if(top_left_index+1 % target_->getDivX()+1 == 0) {
+		ofLogWarning(__FILE__, "cannot get box with edge index(right)");
+		return ret;
+	}
+	if(top_left_index >= (target_->getDivX()+1)*target_->getDivY()) {
+		ofLogWarning(__FILE__, "cannot get box with edge index(bottom)");
+		return ret;
+	}
+	ret.emplace_back(top_left_index);
+	ret.emplace_back(top_left_index+1);
+	ret.emplace_back(top_left_index+target_->getDivX());
+	ret.emplace_back(top_left_index+target_->getDivX()+1);
+	return ret;
+}
+bool MeshHelper::isHitBox(const ofVec2f &test, int top_left_index) const
+{
+	const auto &box = getBox(top_left_index);
+	assert(box.size() == 4);
+	ofPolyline poly;
+	poly.addVertex(box[0]->point());
+	poly.addVertex(box[1]->point());
+	poly.addVertex(box[3]->point());
+	poly.addVertex(box[2]->point());
+	return poly.inside(test);
+}
+bool MeshHelper::isHitLine(const ofVec2f &test, int index0, int index1, float room, float &pos) const
+{
+	const auto &points = target_->getPoints();
+	const ofPoint &pivot = points[index0]->point();
+	const ofPoint &anchor = points[index1]->point();
+	float angle = atan2((test-pivot).y, (test-pivot).x)-atan2((anchor-pivot).y, (anchor-pivot).x);
+	ofPoint alternative = ofPoint(test).getRotatedRad(-angle*2, pivot, ofVec3f(0,0,1));
+	ofPoint intersection = (test+alternative)/2.f;
+	if(pivot.x == anchor.x) {
+		pos = ofMap(intersection.y, pivot.y, anchor.y, 0, 1, false);
+	}
+	else {
+		pos = ofMap(intersection.x, pivot.x, anchor.x, 0, 1, false);
+	}
+	if(0<=pos&&pos<=1) {
+		return (test-intersection).lengthSquared() < room*room;
+	}
+	return false;
+}
+
