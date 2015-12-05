@@ -215,34 +215,74 @@ vector<MeshPoint*> Mesh::getPoints()
 
 void Mesh::drawMesh()
 {
-	glBegin(GL_TRIANGLES);
-	if(ofGetUsingArbTex()) {
-		for(int y = 0; y < div_y_-1; ++y) {
-			for(int x = 0; x < div_x_-1; ++x) {
-				mesh_[getIndex(x  ,y  )].glArbPoint(uv_size_);
-				mesh_[getIndex(x  ,y+1)].glArbPoint(uv_size_);
-				mesh_[getIndex(x+1,y  )].glArbPoint(uv_size_);
-				
-				mesh_[getIndex(x+1,y  )].glArbPoint(uv_size_);
-				mesh_[getIndex(x  ,y+1)].glArbPoint(uv_size_);
-				mesh_[getIndex(x+1,y+1)].glArbPoint(uv_size_);
-			}
-		}
+	if(child_mesh_resolution_ > 1) {
+		drawChildMesh();
 	}
 	else {
-		for(int y = 0; y < div_y_-1; ++y) {
-			for(int x = 0; x < div_x_-1; ++x) {
-				mesh_[getIndex(x  ,y  )].glPoint();
-				mesh_[getIndex(x  ,y+1)].glPoint();
-				mesh_[getIndex(x+1,y  )].glPoint();
-				
-				mesh_[getIndex(x+1,y  )].glPoint();
-				mesh_[getIndex(x  ,y+1)].glPoint();
-				mesh_[getIndex(x+1,y+1)].glPoint();
+		glBegin(GL_TRIANGLES);
+		if(ofGetUsingArbTex()) {
+			for(int y = 0; y < div_y_-1; ++y) {
+				for(int x = 0; x < div_x_-1; ++x) {
+					mesh_[getIndex(x  ,y  )].glArbPoint(uv_size_);
+					mesh_[getIndex(x  ,y+1)].glArbPoint(uv_size_);
+					mesh_[getIndex(x+1,y  )].glArbPoint(uv_size_);
+					
+					mesh_[getIndex(x+1,y  )].glArbPoint(uv_size_);
+					mesh_[getIndex(x  ,y+1)].glArbPoint(uv_size_);
+					mesh_[getIndex(x+1,y+1)].glArbPoint(uv_size_);
+				}
 			}
 		}
+		else {
+			for(int y = 0; y < div_y_-1; ++y) {
+				for(int x = 0; x < div_x_-1; ++x) {
+					mesh_[getIndex(x  ,y  )].glPoint();
+					mesh_[getIndex(x  ,y+1)].glPoint();
+					mesh_[getIndex(x+1,y  )].glPoint();
+					
+					mesh_[getIndex(x+1,y  )].glPoint();
+					mesh_[getIndex(x  ,y+1)].glPoint();
+					mesh_[getIndex(x+1,y+1)].glPoint();
+				}
+			}
+		}
+		glEnd();
 	}
-	glEnd();
+}
+
+Mesh Mesh::makeChildMesh(int x, int y, int resolution)
+{
+	Mesh mesh;
+	mesh.setup(resolution, resolution, 1,1);
+	mesh.setTexCoordSize(uv_size_.x, uv_size_.y);
+	mesh.setChildMeshResolution(1);
+	auto isCorner = [resolution](int x, int y) {
+		return (x==0&&y==0)||(x==resolution-1&&y==resolution-1);
+	};
+	mesh.mesh_[mesh.getIndex(0,0)] = mesh_[getIndex(x,y)];
+	mesh.mesh_[mesh.getIndex(resolution-1,0)] = mesh_[getIndex(x+1,y)];
+	mesh.mesh_[mesh.getIndex(0,resolution-1)] = mesh_[getIndex(x,y+1)];
+	mesh.mesh_[mesh.getIndex(resolution-1,resolution-1)] = mesh_[getIndex(x+1,y+1)];
+	for(int iy = 0; iy < resolution; ++iy) {
+		for(int ix = 0; ix < resolution; ++ix) {
+			mesh.mesh_[mesh.getIndex(ix,iy)].setNodal(isCorner(ix,iy));
+		}
+	}
+	mesh.solve();
+	return mesh;
+}
+void Mesh::drawChildMesh()
+{
+	if(child_mesh_resolution_ < 2) {
+		ofLogWarning(__FILE__, "child mesh resolution should be more than 2: %d", child_mesh_resolution_);
+		return;
+	}
+	for(int y = 0; y < div_y_-1; ++y) {
+		for(int x = 0; x < div_x_-1; ++x) {
+			Mesh &&mesh = makeChildMesh(x, y, child_mesh_resolution_);
+			mesh.drawMesh();
+		}
+	}
 }
 void Mesh::drawWireframe()
 {

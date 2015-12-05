@@ -56,6 +56,7 @@ class Mesh
 public:
 	void setup(int div_x, int div_y, float w, float h);
 	void setTexCoordSize(float u, float v);
+	void setChildMeshResolution(int resolution) { child_mesh_resolution_ = resolution; }
 	void divideCol(int pos, float ratio);
 	void divideRow(int pos, float ratio);
 	void reduceCol(int pos);
@@ -75,6 +76,9 @@ private:
 	vector<int> indices_;
 	vector<MeshPoint> mesh_;	
 	int getIndex(int x, int y) const { return indices_[y*div_x_+x]; }
+	int child_mesh_resolution_ = 8;
+	void drawChildMesh();
+	Mesh makeChildMesh(int x, int y, int resolution);
 };
 }}
 using ofxMeshWarp = ofx::MeshWarp::Mesh;
