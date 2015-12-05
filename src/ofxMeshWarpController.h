@@ -50,7 +50,7 @@ namespace Editor {
 		virtual void mouseExited(ofMouseEventArgs &args);
 		virtual void keyPressed(ofKeyEventArgs &args);
 		virtual void keyReleased(ofKeyEventArgs &args);
-	private:
+	protected:
 		set<Mesh*> meshes_;
 		
 		bool is_enabled_ = false;
