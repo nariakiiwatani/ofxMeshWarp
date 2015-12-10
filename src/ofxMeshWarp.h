@@ -72,6 +72,14 @@ public:
 	const ofVec2f& getTexCoordSize() { return uv_size_; }
 	int getChildMeshResolution() { return child_mesh_resolution_; }
 	void gc();
+	void setEnablePointInterpolation(bool set) { interpolate_flags_.point=set; }
+	void setEnableCoordInterpolation(bool set) { interpolate_flags_.coord=set; }
+	void setEnableNormalInterpolation(bool set) { interpolate_flags_.normal=set; }
+	void setEnableColorInterpolation(bool set) { interpolate_flags_.color=set; }
+	bool isEnabledPointInterpolation() const { return interpolate_flags_.point; }
+	bool isEnabledCoordInterpolation() const { return interpolate_flags_.coord; }
+	bool isEnabledNormalInterpolation() const { return interpolate_flags_.normal; }
+	bool isEnabledColorInterpolation() const { return interpolate_flags_.color; }
 private:
 	int div_x_, div_y_;
 	ofVec2f uv_size_ = ofVec2f(1,1);
@@ -81,6 +89,15 @@ private:
 	int child_mesh_resolution_ = 8;
 	void drawChildMesh();
 	Mesh makeChildMesh(int x, int y, int resolution);
+	struct {
+		bool point=true, coord=true, normal=true, color=true;
+	} interpolate_flags_;
+	bool isEnabledAnyInterpolation() const {
+		return interpolate_flags_.point
+		|| interpolate_flags_.coord
+		|| interpolate_flags_.normal
+		|| interpolate_flags_.color;
+	}
 };
 }}
 using ofxMeshWarp = ofx::MeshWarp::Mesh;

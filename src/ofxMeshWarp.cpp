@@ -101,6 +101,9 @@ void Mesh::reset(float w, float h)
 }
 void Mesh::solve()
 {
+	if(!isEnabledAnyInterpolation()) {
+		return;
+	}
 	auto solveFlameX = [&](int y) {
 		vector<MeshPoint*> work;
 		work.clear();
@@ -111,8 +114,11 @@ void Mesh::solve()
 				if(work.size() > 1) {
 					MeshPoint *p0 = work[0];
 					for(int w = 1, num = work.size(); w < num; ++w) {
-						*work[w] = MeshPoint::getLerped(*p0, *p1, w/(float)num);
-						work[w]->setNodal(false);
+						MeshPoint lerped = MeshPoint::getLerped(*p0, *p1, w/(float)num);
+						if(isEnabledPointInterpolation()) work[w]->setPoint(lerped.point());
+						if(isEnabledCoordInterpolation()) work[w]->setCoord(lerped.coord());
+						if(isEnabledNormalInterpolation()) work[w]->setNormal(lerped.normal());
+						if(isEnabledColorInterpolation()) work[w]->setColor(lerped.color());
 					}
 				}
 				work.clear();
@@ -130,8 +136,11 @@ void Mesh::solve()
 				if(work.size() > 1) {
 					MeshPoint *p0 = work[0];
 					for(int w = 1, num = work.size(); w < num; ++w) {
-						*work[w] = MeshPoint::getLerped(*p0, *p1, w/(float)num);
-						work[w]->setNodal(false);
+						MeshPoint lerped = MeshPoint::getLerped(*p0, *p1, w/(float)num);
+						if(isEnabledPointInterpolation()) work[w]->setPoint(lerped.point());
+						if(isEnabledCoordInterpolation()) work[w]->setCoord(lerped.coord());
+						if(isEnabledNormalInterpolation()) work[w]->setNormal(lerped.normal());
+						if(isEnabledColorInterpolation()) work[w]->setColor(lerped.color());
 					}
 				}
 				work.clear();
@@ -166,14 +175,22 @@ void Mesh::solve()
 			return ofMap(1/(float)self, 0, inv_sum, 0, 1, false);
 		};
 		MeshPoint &dst = mesh_[getIndex(x,y)];
-		ofVec3f point = [&around,&ratio](){ofVec3f ret;for(auto &p:around)ret+=p.first->point()*ratio(p.second);return ret;}();
-		ofVec2f coord = [&around,&ratio](){ofVec2f ret;for(auto &p:around)ret+=p.first->coord()*ratio(p.second);return ret;}();
-		ofVec3f normal = [&around,&ratio](){ofVec3f ret;for(auto &p:around)ret+=p.first->normal()*ratio(p.second);return ret;}();
-		ofColor color = [&around,&ratio](){ofColor ret;for(auto &p:around)ret+=p.first->color()*ratio(p.second);return ret;}();
-		dst.setPoint(point);
-		dst.setCoord(coord);
-		dst.setNormal(normal);
-		dst.setColor(color);
+		if(isEnabledPointInterpolation()) {
+			ofVec3f point = [&around,&ratio](){ofVec3f ret;for(auto &p:around)ret+=p.first->point()*ratio(p.second);return ret;}();
+			dst.setPoint(point);
+		}
+		if(isEnabledCoordInterpolation()) {
+			ofVec2f coord = [&around,&ratio](){ofVec2f ret;for(auto &p:around)ret+=p.first->coord()*ratio(p.second);return ret;}();
+			dst.setCoord(coord);
+		}
+		if(isEnabledNormalInterpolation()) {
+			ofVec3f normal = [&around,&ratio](){ofVec3f ret;for(auto &p:around)ret+=p.first->normal()*ratio(p.second);return ret;}();
+			dst.setNormal(normal);
+		}
+		if(isEnabledColorInterpolation()) {
+			ofColor color = [&around,&ratio](){ofColor ret;for(auto &p:around)ret+=p.first->color()*ratio(p.second);return ret;}();
+			dst.setColor(color);
+		}
 	};
 	solveFlameX(0);
 	solveFlameX(div_y_-1);
