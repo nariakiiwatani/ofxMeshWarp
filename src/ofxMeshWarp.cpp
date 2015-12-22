@@ -39,7 +39,7 @@ void Mesh::divideCol(int pos, float ratio)
 }
 void Mesh::divideRow(int pos, float ratio)
 {
-	if(pos < 0 || div_x_-1 <= pos) {
+	if(pos < 0 || div_y_-1 <= pos) {
 		ofLogError(__FILE__, "index out of bounds: %d", pos);
 		return;
 	}
