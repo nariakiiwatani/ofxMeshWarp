@@ -38,7 +38,7 @@ namespace Editor {
 	class ControllerBase {
 	public:
 		ControllerBase();
-		~ControllerBase();
+		virtual ~ControllerBase();
 		void add(Mesh *target);
 		void enable();
 		void disable();

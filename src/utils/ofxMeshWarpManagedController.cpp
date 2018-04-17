@@ -4,14 +4,6 @@
 using namespace ofx::MeshWarp;
 using namespace ofx::MeshWarp::Editor;
 
-ManagedController::ManagedController()
-{
-//	enable();
-}
-ManagedController::~ManagedController()
-{
-	disable();
-}
 void ManagedController::clearOperation()
 {
 	for_each(controllers_.begin(), controllers_.end(), [&](ControllerBase *t){t->clearOperation();});
