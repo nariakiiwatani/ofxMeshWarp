@@ -40,10 +40,26 @@ void ControllerBase::clear()
 }
 void ControllerBase::draw()
 {
+	ofPushMatrix();
+	ofTranslate(translation_);
+	ofScale(scale_, scale_);
+	ofTranslate(-anchor_point_);
 	for(auto &mesh : meshes_) {
 		mesh->drawWireframe();
 	}
 	drawCustom();
+	ofPopMatrix();
+}
+void ControllerBase::drawFace()
+{
+	ofPushMatrix();
+	ofTranslate(translation_);
+	ofScale(scale_, scale_);
+	ofTranslate(-anchor_point_);
+	for(auto &mesh : meshes_) {
+		mesh->drawMesh();
+	}
+	ofPopMatrix();
 }
 // ==========
 void PointController::clearOperation()
@@ -58,7 +74,7 @@ void PointController::drawCustom()
 {
 	auto drawCircle = [&](MeshPoint* p, float size_add=0) {
 		float size = point_size_*(p->isNode()?1:0.5f)+size_add;
-		ofDrawCircle(p->point(), size);
+		ofDrawCircle(p->point(), size/scale_);
 	};
 	ofPushStyle();
 	ofSetColor(ofColor::green);
@@ -99,7 +115,8 @@ bool PointController::isEditing() const
 }
 void PointController::mousePressed(ofMouseEventArgs &args)
 {
-	mouse_op_.pressed_pos = args;
+	ofVec2f local = screenToLocal(args);
+	mouse_op_.pressed_pos = local;
 	mouse_op_.pressed_state = MouseOperation::STATE_NONE;
 	switch(args.button) {
 		case OF_MOUSE_BUTTON_LEFT:
@@ -155,6 +172,7 @@ void PointController::mousePressed(ofMouseEventArgs &args)
 }
 void PointController::mouseReleased(ofMouseEventArgs &args)
 {
+	ofVec2f local = screenToLocal(args);
 	if(isMakingRect()) {
 		if(!isAlternative() && !isAdditive()) {
 			selected_.clear();
@@ -171,18 +189,19 @@ void PointController::mouseReleased(ofMouseEventArgs &args)
 		mouse_op_.edit.clear();
 	}
 	mouse_op_.pressed_state = MouseOperation::STATE_NONE;
-	mouse_op_.hover = getHit(args);
+	mouse_op_.hover = getHit(local);
 }
 void PointController::mouseMoved(ofMouseEventArgs &args)
 {
-	mouse_op_.pos = args;
-	mouse_op_.hover = getHit(args);
+	ofVec2f local = screenToLocal(args);
+	mouse_op_.pos = local;
+	mouse_op_.hover = getHit(local);
 }
 MeshPoint* PointController::getHit(const ofVec2f &test) const
 {
 	for(auto &mesh : meshes_) {
 		MeshHelper m(mesh);
-		if(MeshPoint *hover = MeshHelper(mesh).getHit(test, point_size_)) {
+		if(MeshPoint *hover = MeshHelper(mesh).getHit(test, point_size_/scale_)) {
 			return hover;
 		}
 	}
@@ -191,17 +210,18 @@ MeshPoint* PointController::getHit(const ofVec2f &test) const
 
 void PointController::mouseDragged(ofMouseEventArgs &args)
 {
-	mouse_op_.pos = args;
+	ofVec2f local = screenToLocal(args);
+	mouse_op_.pos = local;
 	if(isMakingRect()) {
 		mouse_op_.inside_rect.clear();
-		ofRectangle rect(mouse_op_.pressed_pos, args);
+		ofRectangle rect(mouse_op_.pressed_pos, local);
 		for(auto &mesh : meshes_) {
 			const auto &hit = MeshHelper(mesh).getHit(rect);
 			mouse_op_.inside_rect.insert(mouse_op_.inside_rect.end(), hit.begin(), hit.end());
 		}
 	}
 	else if(isGrabbing()) {
-		ofVec2f delta = args-mouse_op_.pressed_pos;
+		ofVec2f delta = local-mouse_op_.pressed_pos;
 		if(isSlide()) {
 			delta.x = abs(delta.x)<abs(delta.y)?0:delta.x;
 			delta.y = abs(delta.y)<abs(delta.x)?0:delta.y;
@@ -240,10 +260,10 @@ void PointController::keyPressed(ofKeyEventArgs &args)
 {
 	ofVec2f delta;
 	switch(args.key) {
-		case OF_KEY_UP:		delta = ofVec2f(0,-1); break;
-		case OF_KEY_DOWN:	delta = ofVec2f(0, 1); break;
-		case OF_KEY_LEFT:	delta = ofVec2f(-1,0); break;
-		case OF_KEY_RIGHT:	delta = ofVec2f(1, 0); break;
+		case OF_KEY_UP:		delta = ofVec2f(0,-1)/scale_; break;
+		case OF_KEY_DOWN:	delta = ofVec2f(0, 1)/scale_; break;
+		case OF_KEY_LEFT:	delta = ofVec2f(-1,0)/scale_; break;
+		case OF_KEY_RIGHT:	delta = ofVec2f(1, 0)/scale_; break;
 	}
 	if(delta.lengthSquared() > 0) {
 		bool moved_any = false;
@@ -342,6 +362,7 @@ bool DivideController::isEditing() const
 
 void DivideController::mousePressed(ofMouseEventArgs &args)
 {
+	ofVec2f local = screenToLocal(args);
 	bool dirty = false;
 	if(isDivide()) {
 		if(hit_info_.isLineX()) {
@@ -365,7 +386,7 @@ void DivideController::mousePressed(ofMouseEventArgs &args)
 	}
 	if(dirty) {
 		hit_info_.mesh->solve();
-		hit_info_ = getHitInfo(args);
+		hit_info_ = getHitInfo(local);
 	}
 }
 void DivideController::mouseReleased(ofMouseEventArgs &args)
@@ -373,7 +394,8 @@ void DivideController::mouseReleased(ofMouseEventArgs &args)
 }
 void DivideController::mouseMoved(ofMouseEventArgs &args)
 {
-	hit_info_ = getHitInfo(args);
+	ofVec2f local = screenToLocal(args);
+	hit_info_ = getHitInfo(local);
 }
 void DivideController::mouseDragged(ofMouseEventArgs &args)
 {
@@ -416,7 +438,7 @@ DivideController::HitInfo DivideController::getHitInfo(const ofVec2f &test)
 		const auto &indices = MeshHelper(info.mesh).getBoxIndices(info.area_index);
 		assert(indices.size() == 4);
 		auto check = [this,&info,&test](int index0, int index1) {
-			if(MeshHelper(info.mesh).isHitLine(test, index0, index1, line_hit_size_, info.pos_intersection)) {
+			if(MeshHelper(info.mesh).isHitLine(test, index0, index1, line_hit_size_/scale_, info.pos_intersection)) {
 				info.line_index_0 = index0; info.line_index_1 = index1;
 				return true;
 			}

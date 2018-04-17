@@ -5,17 +5,19 @@
 
 namespace ofx{namespace MeshWarp{
 namespace Editor {
-	class ManagedController {
+	class ManagedController : public ControllerBase {
 	public:
 		ManagedController();
 		~ManagedController();
 		void add(Mesh *target);
-		void enable();
-		void disable();
-		void setEnable(bool set) { set?enable():disable(); }
-		bool isEnabled() const { return is_enabled_; }
 		void clear();
-		void draw();
+		void clearOperation();
+
+		void setAnchorPoint(float x, float y);
+		void setTranslation(float x, float y);
+		void setScale(float s);
+
+		void drawCustom();
 
 		void mousePressed(ofMouseEventArgs &args);
 		void mouseReleased(ofMouseEventArgs &args);
@@ -27,8 +29,6 @@ namespace Editor {
 		void keyPressed(ofKeyEventArgs &args);
 		void keyReleased(ofKeyEventArgs &args);
 	private:
-		set<Mesh*> meshes_;
-		bool is_enabled_ = false;
 		bool is_mover_active_ = false;
 		bool is_divider_active_ = false;
 		PointController mover_;

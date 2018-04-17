@@ -19,7 +19,8 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
 	tex_.bind();
-	mesh_->drawMesh();
+//	mesh_->drawMesh();
+	controller_.drawFace();
 	tex_.unbind();
 	controller_.draw();
 }

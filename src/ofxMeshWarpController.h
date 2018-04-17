@@ -46,6 +46,11 @@ namespace Editor {
 		bool isEnabled() const { return is_enabled_; }
 		void clear();
 		void draw();
+		void drawFace();
+		
+		void setAnchorPoint(float x, float y) { anchor_point_.set(x,y); }
+		void setTranslation(float x, float y) { translation_.set(x,y); }
+		void setScale(float s) { assert(s>0); scale_ = s; }
 		
 		virtual bool isEditing() const { return false; }
 		
@@ -64,6 +69,12 @@ namespace Editor {
 		set<Mesh*> meshes_;
 		bool is_enabled_ = false;
 		virtual void drawCustom(){};
+		
+		ofVec2f anchor_point_=ofVec2f(0,0);
+		ofVec2f translation_=ofVec2f(0,0);
+		float scale_=1;
+		ofVec2f screenToLocal(ofVec2f src) { return (src-translation_)/scale_+anchor_point_; }
+		ofVec2f localToScreen(ofVec2f src) { return (src-anchor_point_)*scale_+translation_; }
 	};
 
 	class PointController : public ControllerBase

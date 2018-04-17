@@ -12,34 +12,21 @@ ManagedController::~ManagedController()
 {
 	disable();
 }
-void ManagedController::enable()
+void ManagedController::clearOperation()
 {
-	if(!is_enabled_) {
-		ofRegisterMouseEvents(this);
-		ofRegisterKeyEvents(this);
-		is_enabled_ = true;
-	}
-}
-void ManagedController::disable()
-{
-	if(is_enabled_) {
-		ofUnregisterMouseEvents(this);
-		ofUnregisterKeyEvents(this);
-		is_enabled_ = false;
-		for_each(controllers_.begin(), controllers_.end(), [&](ControllerBase *t){t->clearOperation();});
-	}
+	for_each(controllers_.begin(), controllers_.end(), [&](ControllerBase *t){t->clearOperation();});
 }
 void ManagedController::add(Mesh *mesh)
 {
-	meshes_.insert(mesh);
+	ControllerBase::add(mesh);
 	for_each(controllers_.begin(), controllers_.end(), [&](ControllerBase *t){t->add(mesh);});
 }
 void ManagedController::clear()
 {
-	meshes_.clear();
+	ControllerBase::clear();
 	for_each(controllers_.begin(), controllers_.end(), [&](ControllerBase *t){t->clear();});
 }
-void ManagedController::draw()
+void ManagedController::drawCustom()
 {
 	for_each(meshes_.begin(), meshes_.end(), [&](Mesh *m){m->drawWireframe();});
 	if(is_mover_active_) {
@@ -48,6 +35,22 @@ void ManagedController::draw()
 	if(is_divider_active_) {
 		divider_.drawCustom();
 	}
+}
+
+void ManagedController::setAnchorPoint(float x, float y)
+{
+	ControllerBase::setAnchorPoint(x,y);
+	for_each(controllers_.begin(), controllers_.end(), [&](ControllerBase *t){t->setAnchorPoint(x,y);});
+}
+void ManagedController::setTranslation(float x, float y)
+{
+	ControllerBase::setTranslation(x,y);
+	for_each(controllers_.begin(), controllers_.end(), [&](ControllerBase *t){t->setTranslation(x,y);});
+}
+void ManagedController::setScale(float s)
+{
+	ControllerBase::setScale(s);
+	for_each(controllers_.begin(), controllers_.end(), [&](ControllerBase *t){t->setScale(s);});
 }
 
 void ManagedController::activateMover()
