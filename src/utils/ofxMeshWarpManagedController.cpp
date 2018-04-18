@@ -18,9 +18,8 @@ void ManagedController::clear()
 	ControllerBase::clear();
 	for_each(controllers_.begin(), controllers_.end(), [&](ControllerBase *t){t->clear();});
 }
-void ManagedController::drawCustom()
+void ManagedController::drawCustom() const
 {
-	for_each(meshes_.begin(), meshes_.end(), [&](Mesh *m){m->drawWireframe();});
 	if(is_mover_active_) {
 		mover_.drawCustom();
 	}

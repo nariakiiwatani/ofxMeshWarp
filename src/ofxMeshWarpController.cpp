@@ -38,7 +38,7 @@ void ControllerBase::clear()
 	clearOperation();
 	meshes_.clear();
 }
-void ControllerBase::draw()
+void ControllerBase::draw() const
 {
 	ofPushMatrix();
 	ofTranslate(translation_);
@@ -50,7 +50,7 @@ void ControllerBase::draw()
 	drawCustom();
 	ofPopMatrix();
 }
-void ControllerBase::drawFace()
+void ControllerBase::drawFace() const
 {
 	ofPushMatrix();
 	ofTranslate(translation_);
@@ -70,7 +70,7 @@ void PointController::clearOperation()
 	selected_.clear();
 	mouse_op_.pressed_state = MouseOperation::STATE_NONE;
 }
-void PointController::drawCustom()
+void PointController::drawCustom() const
 {
 	auto drawCircle = [&](MeshPoint* p, float size_add=0) {
 		float size = point_size_*(p->isNode()?1:0.5f)+size_add;
@@ -295,7 +295,7 @@ void DivideController::clearOperation()
 {
 	hit_info_ = HitInfo();
 }
-void DivideController::drawCustom()
+void DivideController::drawCustom() const
 {
 	for(auto &mesh : meshes_) {
 		mesh->drawWireframe();
@@ -415,7 +415,7 @@ void DivideController::keyPressed(ofKeyEventArgs &args)
 void DivideController::keyReleased(ofKeyEventArgs &args)
 {
 }
-DivideController::HitInfo DivideController::getHitInfo(const ofVec2f &test)
+DivideController::HitInfo DivideController::getHitInfo(const ofVec2f &test) const
 {
 	HitInfo info;
 	bool is_hit = false;

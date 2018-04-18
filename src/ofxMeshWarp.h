@@ -52,14 +52,14 @@ public:
 	void reduceCol(int pos);
 	void reduceRow(int pos);
 	void reset(float w, float h);
-	void drawMesh();
-	void drawWireframe();
-	void drawDetailedWireframe();
+	void drawMesh() const;
+	void drawWireframe() const;
+	void drawDetailedWireframe() const;
 	vector<MeshPoint*> getPoints();
-	int getDivX() { return div_x_; }
-	int getDivY() { return div_y_; }
-	const ofVec2f& getTexCoordSize() { return uv_size_; }
-	int getChildMeshResolution() { return child_mesh_resolution_; }
+	int getDivX() const { return div_x_; }
+	int getDivY() const { return div_y_; }
+	const ofVec2f& getTexCoordSize() const { return uv_size_; }
+	int getChildMeshResolution() const { return child_mesh_resolution_; }
 	void gc();
 	void setEnablePointInterpolation(bool set) { interpolate_flags_.point=set; }
 	void setEnableCoordInterpolation(bool set) { interpolate_flags_.coord=set; }
@@ -77,8 +77,8 @@ private:
 	ofMesh of_mesh_;
 	int getIndex(int x, int y) const { return indices_[y*div_x_+x]; }
 	int child_mesh_resolution_ = 8;
-	void drawChildMesh();
-	Mesh makeChildMesh(int x, int y, int resolution);
+	void drawChildMesh() const;
+	Mesh makeChildMesh(int x, int y, int resolution) const;
 	struct {
 		bool point=true, coord=true, normal=true, color=true;
 	} interpolate_flags_;

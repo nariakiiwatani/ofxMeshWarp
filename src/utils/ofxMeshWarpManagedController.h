@@ -15,7 +15,7 @@ namespace Editor {
 		void setTranslation(float x, float y);
 		void setScale(float s);
 
-		void drawCustom();
+		void drawCustom() const;
 
 		void mousePressed(ofMouseEventArgs &args);
 		void mouseReleased(ofMouseEventArgs &args);

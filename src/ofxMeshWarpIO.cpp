@@ -31,7 +31,7 @@ void MeshHelper::get(ofBuffer &buffer) const
 	data.resolution = target_->getChildMeshResolution();
 	data.uv_size = target_->getTexCoordSize();
 	buffer.append((const char*)(&data), sizeof(MeshData));
-	const vector<MeshPoint*> &points = target_->getPoints();
+	auto points = target_->getPoints();
 	for(auto &p : points) {
 		PointHelper(p).get(buffer);
 	}
@@ -43,7 +43,7 @@ int MeshHelper::set(const char *buffer)
 	target_->setup(data->divx, data->divy, 1, 1);
 	target_->setTexCoordSize(data->uv_size[0], data->uv_size[1]);
 	ret += sizeof(MeshData);
-	const vector<MeshPoint*> &points = target_->getPoints();
+	auto points = target_->getPoints();
 	for(auto &p : points) {
 		ret += PointHelper(p).set(buffer+ret);
 	}
@@ -57,30 +57,30 @@ void Saver::addMeshes(vector<Mesh*> &mesh)
 {
 	meshes_.insert(meshes_.end(), mesh.begin(), mesh.end());
 }
-void Saver::save(const string &filename)
+void Saver::save(const string &filename) const
 {
 	ofBuffer buffer;
 	save(buffer);
 	ofBufferToFile(filename, buffer, true);
 }
-void Saver::save(ofBuffer &buffer)
+void Saver::save(ofBuffer &buffer) const
 {
 	for(auto &mesh : meshes_) {
 		MeshHelper(mesh).get(buffer);
 	}
 }
 
-vector<Mesh*> Loader::load(const string &filename)
+vector<Mesh*> Loader::load(const string &filename) const
 {
 	return load(ofBufferFromFile(filename, true));
 }
 
-vector<Mesh*> Loader::load(const ofBuffer &buffer)
+vector<Mesh*> Loader::load(const ofBuffer &buffer) const
 {
 	return load(buffer.getData(), buffer.size());
 }
 
-vector<Mesh*> Loader::load(const char *data, size_t size)
+vector<Mesh*> Loader::load(const char *data, size_t size) const
 {
 	vector<Mesh*> ret;
 	const char *end = data+size;

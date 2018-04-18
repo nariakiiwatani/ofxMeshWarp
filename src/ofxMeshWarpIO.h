@@ -36,16 +36,16 @@ namespace IO {
 	public:
 		void addMesh(Mesh *mesh);
 		void addMeshes(vector<Mesh*> &mesh);
-		void save(const string &filename);
-		void save(ofBuffer &buffer);
+		void save(const string &filename) const;
+		void save(ofBuffer &buffer) const;
 	private:
 		vector<Mesh*> meshes_;
 	};
 	class Loader {
 	public:
-		vector<Mesh*> load(const string &filename);
-		vector<Mesh*> load(const ofBuffer &buffer);
-		vector<Mesh*> load(const char *data, size_t size);
+		vector<Mesh*> load(const string &filename) const;
+		vector<Mesh*> load(const ofBuffer &buffer) const;
+		vector<Mesh*> load(const char *data, size_t size) const;
 	};
 }
 

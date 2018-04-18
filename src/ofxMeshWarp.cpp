@@ -271,7 +271,7 @@ vector<MeshPoint*> Mesh::getPoints()
 	return ret;
 }
 
-void Mesh::drawMesh()
+void Mesh::drawMesh() const
 {
 	if(child_mesh_resolution_ > 1) {
 		drawChildMesh();
@@ -281,7 +281,7 @@ void Mesh::drawMesh()
 	}
 }
 
-Mesh Mesh::makeChildMesh(int x, int y, int resolution)
+Mesh Mesh::makeChildMesh(int x, int y, int resolution) const
 {
 	Mesh mesh;
 	mesh.setChildMeshResolution(1);
@@ -302,7 +302,7 @@ Mesh Mesh::makeChildMesh(int x, int y, int resolution)
 	mesh.solve();
 	return mesh;
 }
-void Mesh::drawChildMesh()
+void Mesh::drawChildMesh() const
 {
 	if(child_mesh_resolution_ < 2) {
 		ofLogWarning(__FILE__, "child mesh resolution should be more than 2: %d", child_mesh_resolution_);
@@ -314,7 +314,7 @@ void Mesh::drawChildMesh()
 		}
 	}
 }
-void Mesh::drawWireframe()
+void Mesh::drawWireframe() const
 {
 	for(int y = 0; y < div_y_; ++y) {
 		glBegin(GL_LINE_STRIP);
@@ -333,7 +333,7 @@ void Mesh::drawWireframe()
 		glEnd();
 	}
 }
-void Mesh::drawDetailedWireframe()
+void Mesh::drawDetailedWireframe() const
 {
 	if(child_mesh_resolution_ > 1) {
 		for(int x = 0; x < div_x_-1; ++x) {

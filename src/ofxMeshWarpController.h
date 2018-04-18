@@ -45,8 +45,8 @@ namespace Editor {
 		void setEnable(bool set) { set?enable():disable(); }
 		bool isEnabled() const { return is_enabled_; }
 		void clear();
-		void draw();
-		void drawFace();
+		void draw() const;
+		void drawFace() const;
 		
 		void setAnchorPoint(float x, float y) { anchor_point_.set(x,y); }
 		void setTranslation(float x, float y) { translation_.set(x,y); }
@@ -68,20 +68,20 @@ namespace Editor {
 	protected:
 		set<Mesh*> meshes_;
 		bool is_enabled_ = false;
-		virtual void drawCustom(){};
+		virtual void drawCustom() const{};
 		
 		ofVec2f anchor_point_=ofVec2f(0,0);
 		ofVec2f translation_=ofVec2f(0,0);
 		float scale_=1;
-		ofVec2f screenToLocal(ofVec2f src) { return (src-translation_)/scale_+anchor_point_; }
-		ofVec2f localToScreen(ofVec2f src) { return (src-anchor_point_)*scale_+translation_; }
+		ofVec2f screenToLocal(ofVec2f src) const { return (src-translation_)/scale_+anchor_point_; }
+		ofVec2f localToScreen(ofVec2f src) const { return (src-anchor_point_)*scale_+translation_; }
 	};
 
 	class PointController : public ControllerBase
 	{
 	public:
 		void clearOperation();
-		void drawCustom();
+		void drawCustom() const;
 		bool isEditing() const;
 		
 		virtual void mousePressed(ofMouseEventArgs &args);
@@ -125,7 +125,7 @@ namespace Editor {
 	{
 	public:
 		void clearOperation();
-		void drawCustom();
+		void drawCustom() const;
 		bool isEditing() const;
 		
 		virtual void mousePressed(ofMouseEventArgs &args);
@@ -152,7 +152,7 @@ namespace Editor {
 		
 		virtual bool isDivide() const { return !ofGetKeyPressed(OF_KEY_ALT); }
 		virtual bool isReduce() const { return ofGetKeyPressed(OF_KEY_ALT); }
-		HitInfo getHitInfo(const ofVec2f &test);
+		HitInfo getHitInfo(const ofVec2f &test) const;
 	};
 }
 }}
