@@ -7,7 +7,7 @@
 
 namespace ofx{namespace MeshWarp{
 namespace Editor {
-	class PointHelper : public pair<MeshPoint*,MeshPoint> {
+	class PointHelper : public std::pair<MeshPoint*,MeshPoint> {
 	public:
 		PointHelper(MeshPoint *p):pair(p,*p){}
 		void setVertex(const ofVec2f &point) { first->setPoint(point); }
@@ -29,13 +29,13 @@ namespace Editor {
 	public:
 		MeshHelper(Mesh *m):target_(m){}
 		MeshPoint* getHit(const ofVec2f &test, float room, int index=0) const;
-		vector<MeshPoint*> getHit(const ofRectangle &test) const;
-		vector<MeshPoint*> getBox(int top_left_index) const;
-		vector<int> getBoxIndices(int top_left_index) const;
+		std::vector<MeshPoint*> getHit(const ofRectangle &test) const;
+		std::vector<MeshPoint*> getBox(int top_left_index) const;
+		std::vector<int> getBoxIndices(int top_left_index) const;
 		bool isHitBox(const ofVec2f &test, int top_left_index) const;
 		bool isHitLine(const ofVec2f &test, int index0, int index1, float room, float &pos) const;
-		vector<MeshPoint*> getColPoints(int point_index) const;
-		vector<MeshPoint*> getRowPoints(int point_index) const;
+		std::vector<MeshPoint*> getColPoints(int point_index) const;
+		std::vector<MeshPoint*> getRowPoints(int point_index) const;
 	private:
 		Mesh *target_;
 	};
@@ -71,7 +71,7 @@ namespace Editor {
 		virtual void keyPressed(ofKeyEventArgs &args){}
 		virtual void keyReleased(ofKeyEventArgs &args){}
 	protected:
-		set<std::shared_ptr<Mesh>> meshes_;
+		std::set<std::shared_ptr<Mesh>> meshes_;
 		bool is_enabled_ = false;
 		virtual void drawCustom() const{};
 		
@@ -101,7 +101,7 @@ namespace Editor {
 	protected:
 		struct MouseOperation {
 			MeshPoint *hover = nullptr;
-			vector<MeshPoint*> inside_rect;
+			std::vector<MeshPoint*> inside_rect;
 			ofVec2f pressed_pos, pos;
 			vector<PointHelper> edit;
 			enum {
@@ -110,7 +110,7 @@ namespace Editor {
 				STATE_MAKING_RECT,
 			} pressed_state = STATE_NONE;
 		} mouse_op_;
-		set<MeshPoint*> selected_;
+		std::set<MeshPoint*> selected_;
 		float point_size_ = 10;
 		float screen_to_coord_ = 1/100.f;
 		float scroll_to_alpha_ = -1/100.f;

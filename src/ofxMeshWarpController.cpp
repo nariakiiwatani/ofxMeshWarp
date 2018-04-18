@@ -3,6 +3,7 @@
 
 using namespace ofx::MeshWarp;
 using namespace ofx::MeshWarp::Editor;
+using namespace std;
 
 ControllerBase::ControllerBase()
 {
@@ -29,7 +30,7 @@ void ControllerBase::disable()
 		clearOperation();
 	}
 }
-void ControllerBase::add(std::shared_ptr<Mesh> mesh)
+void ControllerBase::add(shared_ptr<Mesh> mesh)
 {
 	meshes_.insert(mesh);
 }
@@ -217,7 +218,7 @@ void PointController::mouseDragged(ofMouseEventArgs &args)
 		ofRectangle rect(mouse_op_.pressed_pos, local);
 		for(auto &mesh : meshes_) {
 			const auto &hit = MeshHelper(mesh.get()).getHit(rect);
-			mouse_op_.inside_rect.insert(mouse_op_.inside_rect.end(), hit.begin(), hit.end());
+			mouse_op_.inside_rect.insert(end(mouse_op_.inside_rect), begin(hit), end(hit));
 		}
 	}
 	else if(isGrabbing()) {

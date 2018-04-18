@@ -23,7 +23,7 @@ public:
 	void dragEvent(ofDragInfo dragInfo);
 	void gotMessage(ofMessage msg);
 private:
-	shared_ptr<ofxMeshWarp> mesh_;
+	std::shared_ptr<ofxMeshWarp> mesh_;
 	ofxMeshWarpController controller_;
 	ofTexture tex_;
 };

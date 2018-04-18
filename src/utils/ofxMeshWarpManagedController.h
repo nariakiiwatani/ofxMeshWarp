@@ -31,7 +31,7 @@ namespace Editor {
 		bool is_divider_active_ = false;
 		PointController mover_;
 		DivideController divider_;
-		vector<ofxMeshWarpControllerBase*> controllers_{&mover_,&divider_};
+		std::vector<ofxMeshWarpControllerBase*> controllers_{&mover_,&divider_};
 		void activateMover();
 		void activateDivider();
 	};

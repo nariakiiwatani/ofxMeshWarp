@@ -3,6 +3,7 @@
 #include <numeric>
 
 using namespace ofx::MeshWarp;
+using namespace std;
 
 void Mesh::setup(int div_x, int div_y, float w, float h)
 {
@@ -42,7 +43,7 @@ void Mesh::divideCol(int pos, float ratio)
 		return;
 	}
 	vector<int>indices = indices_;
-	vector<int>::iterator it = indices.begin()+pos+1;
+	vector<int>::iterator it = begin(indices)+pos+1;
 	for(int y = 0; y < div_y_; ++y) {
 		MeshPoint &a = mesh_[getIndex(pos,y)];
 		MeshPoint &b = mesh_[getIndex(pos+1,y)];
@@ -61,7 +62,7 @@ void Mesh::divideRow(int pos, float ratio)
 		return;
 	}
 	vector<int>indices = indices_;
-	vector<int>::iterator it = indices.begin()+(pos+1)*div_x_;
+	vector<int>::iterator it = begin(indices)+(pos+1)*div_x_;
 	for(int x = 0; x < div_x_; ++x) {
 		MeshPoint &a = mesh_[getIndex(x,pos)];
 		MeshPoint &b = mesh_[getIndex(x,pos+1)];
@@ -85,7 +86,7 @@ void Mesh::reduceCol(int pos)
 	}
 	for(int i = div_y_; --i >= 0;) {
 		int index = i*div_x_+pos;
-		indices_.erase(indices_.begin()+index);
+		indices_.erase(begin(indices_)+index);
 	}
 	--div_x_;
 	setDirty();
@@ -100,7 +101,7 @@ void Mesh::reduceRow(int pos)
 		ofLogError(__FILE__, "index out of bounds: %d", pos);
 		return;
 	}
-	auto from = indices_.begin()+pos*div_x_;
+	auto from = begin(indices_)+pos*div_x_;
 	auto to = from+div_x_;
 	indices_.erase(from, to);
 	--div_y_;
@@ -117,7 +118,7 @@ void Mesh::reset(float w, float h)
 		point.setPoint(coord*ofVec2f(w,h));
 	}
 	indices_.resize(num);
-	iota(indices_.begin(),indices_.end(), 0);
+	iota(begin(indices_), end(indices_), 0);
 	setDirty();
 }
 void Mesh::solve()
@@ -270,7 +271,7 @@ void Mesh::gc()
 		neu.push_back(mesh_[i]);
 	}
 	neu.swap(mesh_);
-	iota(indices_.begin(),indices_.end(), 0);
+	iota(begin(indices_), end(indices_), 0);
 	dirty_ = true;
 }
 

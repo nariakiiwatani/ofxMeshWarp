@@ -2,6 +2,7 @@
 
 using namespace ofx::MeshWarp;
 using namespace ofx::MeshWarp::IO;
+using namespace std;
 
 void PointHelper::get(ofBuffer &buffer) const
 {
@@ -50,13 +51,13 @@ int MeshHelper::set(const char *buffer)
 	}
 	return ret;
 }
-void Saver::addMesh(std::shared_ptr<Mesh> mesh)
+void Saver::addMesh(shared_ptr<Mesh> mesh)
 {
 	meshes_.push_back(mesh);
 }
-void Saver::addMeshes(vector<std::shared_ptr<Mesh>> mesh)
+void Saver::addMeshes(vector<shared_ptr<Mesh>> mesh)
 {
-	meshes_.insert(meshes_.end(), mesh.begin(), mesh.end());
+	meshes_.insert(end(meshes_), begin(mesh), end(mesh));
 }
 void Saver::save(const string &filename) const
 {
@@ -71,22 +72,22 @@ void Saver::save(ofBuffer &buffer) const
 	}
 }
 
-vector<std::shared_ptr<Mesh>> Loader::load(const string &filename) const
+vector<shared_ptr<Mesh>> Loader::load(const string &filename) const
 {
 	return load(ofBufferFromFile(filename, true));
 }
 
-vector<std::shared_ptr<Mesh>> Loader::load(const ofBuffer &buffer) const
+vector<shared_ptr<Mesh>> Loader::load(const ofBuffer &buffer) const
 {
 	return load(buffer.getData(), buffer.size());
 }
 
-vector<std::shared_ptr<Mesh>> Loader::load(const char *data, size_t size) const
+vector<shared_ptr<Mesh>> Loader::load(const char *data, size_t size) const
 {
-	vector<std::shared_ptr<Mesh>> ret;
+	vector<shared_ptr<Mesh>> ret;
 	const char *end = data+size;
 	while(data < end) {
-		auto mesh = std::make_shared<Mesh>();
+		auto mesh = make_shared<Mesh>();
 		data += MeshHelper(mesh.get()).set(data);
 		ret.push_back(mesh);
 	}

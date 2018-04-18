@@ -3,20 +3,21 @@
 
 using namespace ofx::MeshWarp;
 using namespace ofx::MeshWarp::Editor;
+using namespace std;
 
 void ManagedController::clearOperation()
 {
-	for_each(controllers_.begin(), controllers_.end(), [&](ControllerBase *t){t->clearOperation();});
+	for_each(begin(controllers_), end(controllers_), [&](ControllerBase *t){t->clearOperation();});
 }
-void ManagedController::add(std::shared_ptr<Mesh> mesh)
+void ManagedController::add(shared_ptr<Mesh> mesh)
 {
 	ControllerBase::add(mesh);
-	for_each(controllers_.begin(), controllers_.end(), [&](ControllerBase *t){t->add(mesh);});
+	for_each(begin(controllers_), end(controllers_), [&](ControllerBase *t){t->add(mesh);});
 }
 void ManagedController::clear()
 {
 	ControllerBase::clear();
-	for_each(controllers_.begin(), controllers_.end(), [&](ControllerBase *t){t->clear();});
+	for_each(begin(controllers_), end(controllers_), [&](ControllerBase *t){t->clear();});
 }
 void ManagedController::drawCustom() const
 {
@@ -31,17 +32,17 @@ void ManagedController::drawCustom() const
 void ManagedController::setAnchorPoint(float x, float y)
 {
 	ControllerBase::setAnchorPoint(x,y);
-	for_each(controllers_.begin(), controllers_.end(), [&](ControllerBase *t){t->setAnchorPoint(x,y);});
+	for_each(begin(controllers_), end(controllers_), [&](ControllerBase *t){t->setAnchorPoint(x,y);});
 }
 void ManagedController::setTranslation(float x, float y)
 {
 	ControllerBase::setTranslation(x,y);
-	for_each(controllers_.begin(), controllers_.end(), [&](ControllerBase *t){t->setTranslation(x,y);});
+	for_each(begin(controllers_), end(controllers_), [&](ControllerBase *t){t->setTranslation(x,y);});
 }
 void ManagedController::setScale(float s)
 {
 	ControllerBase::setScale(s);
-	for_each(controllers_.begin(), controllers_.end(), [&](ControllerBase *t){t->setScale(s);});
+	for_each(begin(controllers_), end(controllers_), [&](ControllerBase *t){t->setScale(s);});
 }
 
 void ManagedController::activateMover()

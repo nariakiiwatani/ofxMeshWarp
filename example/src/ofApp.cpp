@@ -1,10 +1,11 @@
 #include "ofApp.h"
 #include "ofxMeshWarpIO.h"
+using namespace std;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
 	ofLoadImage(tex_, "of.png");
-	mesh_ = std::make_shared<ofxMeshWarp>();
+	mesh_ = make_shared<ofxMeshWarp>();
 	mesh_->setup(4,4,512,512);
 	mesh_->setUVRect(ofRectangle(0, 0, tex_.getWidth(), tex_.getHeight()));
 	controller_.add(mesh_);
@@ -36,7 +37,7 @@ void ofApp::keyPressed(int key){
 		}	break;
 		case 'l': {
 			ofxMeshWarpLoad loader;
-			vector<std::shared_ptr<ofxMeshWarp>> result = loader.load("hoge.txt");
+			vector<shared_ptr<ofxMeshWarp>> result = loader.load("hoge.txt");
 			if(!result.empty()) {
 				controller_.clear();
 				mesh_ = result[0];
