@@ -209,8 +209,15 @@ void Mesh::solve()
 			dst.setNormal(normal);
 		}
 		if(isEnabledColorInterpolation()) {
-			ofColor color = [&around,&ratio](){ofColor ret;for(auto &p:around)ret+=p.first->color()*ratio(p.second);return ret;}();
-			dst.setColor(color);
+			ofVec4f color = [&around,&ratio]() {
+				ofVec4f ret;
+				for(auto &p:around) {
+					auto color = p.first->color();
+					ret += ofVec4f(color[0], color[1], color[2], color[3])*ratio(p.second);
+				}
+				return ret;
+			}();
+			dst.setColor(ofFloatColor(color[0],color[1],color[2],color[3]));
 		}
 	};
 	solveFlameX(0);

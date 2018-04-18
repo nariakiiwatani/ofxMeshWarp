@@ -249,6 +249,20 @@ void PointController::mouseDragged(ofMouseEventArgs &args)
 }
 void PointController::mouseScrolled(ofMouseEventArgs &args)
 {
+	float delta = args.scrollY*scroll_to_alpha_;
+	bool moved_any = false;
+	for(auto &p : selected_) {
+		if(p->isNode()) {
+			float alpha = ofClamp(p->alpha()+delta, 0, ofFloatColor::limit());
+			PointHelper(p).setAlpha(alpha);
+			moved_any = true;
+		}
+	}
+	if(moved_any) {
+		for(auto &m : meshes_) {
+			m->setDirty();
+		}
+	}
 }
 void PointController::mouseEntered(ofMouseEventArgs &args)
 {

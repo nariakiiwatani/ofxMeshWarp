@@ -22,12 +22,14 @@ public:
 	const ofVec3f &point() const { return point_; }
 	const ofVec2f &coord() const { return coord_; }
 	const ofVec3f &normal() const { return normal_; }
-	const ofColor &color() const { return color_; }
+	const ofFloatColor &color() const { return color_; }
+	float alpha() const { return color_.a; }
 	bool isNode() const { return is_node_; }
 	void setPoint(const ofVec3f &point) { point_=point; }
 	void setCoord(const ofVec2f &coord) { coord_=coord; }
 	void setNormal(const ofVec3f &normal) { normal_=normal; }
-	void setColor(const ofColor &color) { color_=color; }
+	void setColor(const ofFloatColor &color) { color_=color; }
+	void setAlpha(float alpha) { color_.a=alpha; }
 	void setNodal(bool set) { is_node_=set; }
 	void toggleNodal() { is_node_^=true; }
 
@@ -35,7 +37,7 @@ private:
 	ofVec3f point_ = ofVec3f(0,0,0);
 	ofVec2f coord_ = ofVec2f(0,0);
 	ofVec3f normal_ = ofVec3f(0,0,1);
-	ofColor color_ = ofColor::white;
+	ofFloatColor color_ = ofFloatColor::white;
 	bool is_node_ = true;
 };
 

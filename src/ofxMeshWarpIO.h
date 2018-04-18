@@ -16,7 +16,7 @@ namespace IO {
 			ofVec3f point;
 			ofVec2f coord;
 			ofVec3f normal;
-			ofColor color;
+			ofFloatColor color;
 			bool is_node;
 		};
 	};

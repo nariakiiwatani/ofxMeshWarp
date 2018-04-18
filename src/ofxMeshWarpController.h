@@ -18,6 +18,11 @@ namespace Editor {
 		void setCoordMove(const ofVec2f &move) { first->setCoord(second.coord()+move); }
 		void moveCoord(const ofVec2f &move) { first->setCoord(first->coord()+move); }
 		void resetCoord() { first->setCoord(second.coord()); }
+		void setColor(const ofFloatColor &color) { first->setColor(color); }
+		void resetColor() { first->setColor(second.color()); }
+		void setAlpha(float alpha) { first->setAlpha(alpha); }
+		void addAlpha(float alpha) { first->setAlpha(first->alpha()+alpha); }
+		void resetAlpha() { first->setAlpha(second.alpha()); }
 	};
 	class MeshHelper
 	{
@@ -108,6 +113,7 @@ namespace Editor {
 		set<MeshPoint*> selected_;
 		float point_size_ = 10;
 		float screen_to_coord_ = 1/100.f;
+		float scroll_to_alpha_ = -1/100.f;
 		
 		bool isGrabbing() const { return mouse_op_.pressed_state==MouseOperation::STATE_GRABBING; }
 		bool isMakingRect() const { return mouse_op_.pressed_state==MouseOperation::STATE_MAKING_RECT; }
