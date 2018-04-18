@@ -17,6 +17,9 @@ With option key pressed, texcoord will be moved instead.
 With shift key pressed, points move according axis.  
 You can also move by arrow keys.
 
+### editing alpha
+You can edit points' alpha by scrolling Y-axis.
+
 ### switching nodal or not
 Each point has a property of nodal or not.  
 By clicking on a point with option key pressed, you can switch it.  
@@ -36,14 +39,10 @@ So if you call divide/reduce many times, you may need to call `ofxMeshWarp::gc()
 ### Save/Load
 See example
 
-
-## todo
-- exporting as ofMesh(if needed)  
-
 ## Tested on
-- Mac OSX 10.10.5  
-- oF 0.9.0  
-- Xcode 7.0.1
+- Mac OSX 10.12.2  
+- oF 0.9.8  
+- Xcode 8.3.3
 
 ## License
 MIT license.
