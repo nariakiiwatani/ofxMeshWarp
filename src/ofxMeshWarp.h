@@ -5,6 +5,7 @@
 #include "ofVec3f.h"
 #include "ofColor.h"
 #include "ofMesh.h"
+#include "ofRectangle.h"
 
 namespace ofx{namespace MeshWarp{
 class MeshPoint
@@ -45,7 +46,8 @@ public:
 	void setup(int div_x, int div_y, float w, float h);
 	void setDirty() { dirty_ = true; }
 	void update();
-	void setTexCoordSize(float u, float v);
+	OF_DEPRECATED_MSG("use setUVRect instead", void setTexCoordSize(float u, float v));
+	void setUVRect(const ofRectangle &uv);
 	void setChildMeshResolution(int resolution);
 	void divideCol(int pos, float ratio);
 	void divideRow(int pos, float ratio);
@@ -58,7 +60,7 @@ public:
 	vector<MeshPoint*> getPoints();
 	int getDivX() const { return div_x_; }
 	int getDivY() const { return div_y_; }
-	const ofVec2f& getTexCoordSize() const { return uv_size_; }
+	const ofRectangle& getUVRect() const { return uv_rect_; }
 	int getChildMeshResolution() const { return child_mesh_resolution_; }
 	void gc();
 	void setEnablePointInterpolation(bool set) { interpolate_flags_.point=set; }
@@ -71,7 +73,7 @@ public:
 	bool isEnabledColorInterpolation() const { return interpolate_flags_.color; }
 private:
 	int div_x_, div_y_;
-	ofVec2f uv_size_ = ofVec2f(1,1);
+	ofRectangle uv_rect_ = ofRectangle(0,0,1,1);
 	vector<int> indices_;
 	vector<MeshPoint> mesh_;
 	ofMesh of_mesh_;

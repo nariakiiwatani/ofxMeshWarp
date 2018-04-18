@@ -6,7 +6,7 @@ void ofApp::setup(){
 	ofLoadImage(tex_, "of.png");
 	mesh_ = shared_ptr<ofxMeshWarp>(new ofxMeshWarp());
 	mesh_->setup(4,4,512,512);
-	mesh_->setTexCoordSize(tex_.getWidth(), tex_.getHeight());
+	mesh_->setUVRect(ofRectangle(0, 0, tex_.getWidth(), tex_.getHeight()));
 	controller_.add(mesh_.get());
 	controller_.enable();
 }

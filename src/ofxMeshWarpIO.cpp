@@ -29,7 +29,7 @@ void MeshHelper::get(ofBuffer &buffer) const
 	data.divx = target_->getDivX();
 	data.divy = target_->getDivY();
 	data.resolution = target_->getChildMeshResolution();
-	data.uv_size = target_->getTexCoordSize();
+	data.uv_rect = target_->getUVRect();
 	buffer.append((const char*)(&data), sizeof(MeshData));
 	auto points = target_->getPoints();
 	for(auto &p : points) {
@@ -41,7 +41,7 @@ int MeshHelper::set(const char *buffer)
 	int ret = 0;
 	MeshData *data = (MeshData*)buffer;
 	target_->setup(data->divx, data->divy, 1, 1);
-	target_->setTexCoordSize(data->uv_size[0], data->uv_size[1]);
+	target_->setUVRect(ofRectangle(data->uv_rect.x, data->uv_rect.y, data->uv_rect.width, data->uv_rect.height));
 	ret += sizeof(MeshData);
 	auto points = target_->getPoints();
 	for(auto &p : points) {

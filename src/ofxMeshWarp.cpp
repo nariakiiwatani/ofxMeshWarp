@@ -23,7 +23,11 @@ void Mesh::update()
 }
 void Mesh::setTexCoordSize(float u, float v)
 {
-	uv_size_.set(u,v);
+	setUVRect(ofRectangle(0,0,u,v));
+}
+void Mesh::setUVRect(const ofRectangle &rect)
+{
+	uv_rect_ = rect;
 	setDirty();
 }
 void Mesh::setChildMeshResolution(int resolution)
@@ -226,7 +230,10 @@ void Mesh::solve()
 	
 	of_mesh_.clear();
 	for(auto &p :mesh_) {
-		of_mesh_.addTexCoord(p.coord()*uv_size_);
+		ofVec2f coord = p.coord();
+		coord.x =ofMap(coord.x, 0, 1, uv_rect_.getLeft(), uv_rect_.getRight());
+		coord.y =ofMap(coord.y, 0, 1, uv_rect_.getTop(), uv_rect_.getBottom());
+		of_mesh_.addTexCoord(coord);
 		of_mesh_.addColor(p.color());
 		of_mesh_.addNormal(p.normal());
 		of_mesh_.addVertex(p.point());
@@ -285,7 +292,7 @@ Mesh Mesh::makeChildMesh(int x, int y, int resolution) const
 {
 	Mesh mesh;
 	mesh.setChildMeshResolution(1);
-	mesh.setTexCoordSize(uv_size_.x, uv_size_.y);
+	mesh.setUVRect(uv_rect_);
 	mesh.setup(resolution, resolution, 1,1);
 	auto isCorner = [resolution](int x, int y) {
 		return (x==0&&y==0)||(x==resolution-1&&y==resolution-1);
