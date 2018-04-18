@@ -7,7 +7,7 @@ namespace ofx{namespace MeshWarp{
 namespace Editor {
 	class ManagedController : public ControllerBase {
 	public:
-		void add(Mesh *target);
+		void add(std::shared_ptr<Mesh> target);
 		void clear();
 		void clearOperation();
 

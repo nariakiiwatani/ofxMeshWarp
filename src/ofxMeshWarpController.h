@@ -44,7 +44,7 @@ namespace Editor {
 	public:
 		ControllerBase();
 		virtual ~ControllerBase();
-		void add(Mesh *target);
+		void add(std::shared_ptr<Mesh> target);
 		void enable();
 		void disable();
 		void setEnable(bool set) { set?enable():disable(); }
@@ -71,7 +71,7 @@ namespace Editor {
 		virtual void keyPressed(ofKeyEventArgs &args){}
 		virtual void keyReleased(ofKeyEventArgs &args){}
 	protected:
-		set<Mesh*> meshes_;
+		set<std::shared_ptr<Mesh>> meshes_;
 		bool is_enabled_ = false;
 		virtual void drawCustom() const{};
 		

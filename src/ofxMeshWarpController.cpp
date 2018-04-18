@@ -29,7 +29,7 @@ void ControllerBase::disable()
 		clearOperation();
 	}
 }
-void ControllerBase::add(Mesh *mesh)
+void ControllerBase::add(std::shared_ptr<Mesh> mesh)
 {
 	meshes_.insert(mesh);
 }
@@ -200,8 +200,8 @@ void PointController::mouseMoved(ofMouseEventArgs &args)
 MeshPoint* PointController::getHit(const ofVec2f &test) const
 {
 	for(auto &mesh : meshes_) {
-		MeshHelper m(mesh);
-		if(MeshPoint *hover = MeshHelper(mesh).getHit(test, point_size_/scale_)) {
+		MeshHelper m(mesh.get());
+		if(MeshPoint *hover = m.getHit(test, point_size_/scale_)) {
 			return hover;
 		}
 	}
@@ -216,7 +216,7 @@ void PointController::mouseDragged(ofMouseEventArgs &args)
 		mouse_op_.inside_rect.clear();
 		ofRectangle rect(mouse_op_.pressed_pos, local);
 		for(auto &mesh : meshes_) {
-			const auto &hit = MeshHelper(mesh).getHit(rect);
+			const auto &hit = MeshHelper(mesh.get()).getHit(rect);
 			mouse_op_.inside_rect.insert(mouse_op_.inside_rect.end(), hit.begin(), hit.end());
 		}
 	}
@@ -440,8 +440,8 @@ DivideController::HitInfo DivideController::getHitInfo(const ofVec2f &test) cons
 		for(int y = 0; y < div_y-1; ++y) {
 			for(int x = 0; x < div_x-1; ++x) {
 				int index = y*div_x+x;
-				if(MeshHelper(m).isHitBox(test, index)) {
-					info.mesh = m;
+				if(MeshHelper(m.get()).isHitBox(test, index)) {
+					info.mesh = m.get();
 					info.area_index = index;
 					is_hit = true;
 				}

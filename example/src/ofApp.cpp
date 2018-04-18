@@ -4,10 +4,10 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 	ofLoadImage(tex_, "of.png");
-	mesh_ = shared_ptr<ofxMeshWarp>(new ofxMeshWarp());
+	mesh_ = std::make_shared<ofxMeshWarp>();
 	mesh_->setup(4,4,512,512);
 	mesh_->setUVRect(ofRectangle(0, 0, tex_.getWidth(), tex_.getHeight()));
-	controller_.add(mesh_.get());
+	controller_.add(mesh_);
 	controller_.enable();
 }
 
@@ -31,16 +31,16 @@ void ofApp::keyPressed(int key){
 	switch(key) {
 		case 's': {
 			ofxMeshWarpSave saver;
-			saver.addMesh(mesh_.get());
+			saver.addMesh(mesh_);
 			saver.save("hoge.txt");
 		}	break;
 		case 'l': {
 			ofxMeshWarpLoad loader;
-			const vector<ofxMeshWarp*> &result = loader.load("hoge.txt");
+			vector<std::shared_ptr<ofxMeshWarp>> result = loader.load("hoge.txt");
 			if(!result.empty()) {
 				controller_.clear();
-				mesh_ = shared_ptr<ofxMeshWarp>(result[0]);
-				controller_.add(mesh_.get());
+				mesh_ = result[0];
+				controller_.add(mesh_);
 			}
 		}	break;
 	}

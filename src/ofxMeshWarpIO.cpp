@@ -50,11 +50,11 @@ int MeshHelper::set(const char *buffer)
 	}
 	return ret;
 }
-void Saver::addMesh(Mesh *mesh)
+void Saver::addMesh(std::shared_ptr<Mesh> mesh)
 {
 	meshes_.push_back(mesh);
 }
-void Saver::addMeshes(vector<Mesh*> &mesh)
+void Saver::addMeshes(vector<std::shared_ptr<Mesh>> mesh)
 {
 	meshes_.insert(meshes_.end(), mesh.begin(), mesh.end());
 }
@@ -67,27 +67,27 @@ void Saver::save(const string &filename) const
 void Saver::save(ofBuffer &buffer) const
 {
 	for(auto &mesh : meshes_) {
-		MeshHelper(mesh).get(buffer);
+		MeshHelper(mesh.get()).get(buffer);
 	}
 }
 
-vector<Mesh*> Loader::load(const string &filename) const
+vector<std::shared_ptr<Mesh>> Loader::load(const string &filename) const
 {
 	return load(ofBufferFromFile(filename, true));
 }
 
-vector<Mesh*> Loader::load(const ofBuffer &buffer) const
+vector<std::shared_ptr<Mesh>> Loader::load(const ofBuffer &buffer) const
 {
 	return load(buffer.getData(), buffer.size());
 }
 
-vector<Mesh*> Loader::load(const char *data, size_t size) const
+vector<std::shared_ptr<Mesh>> Loader::load(const char *data, size_t size) const
 {
-	vector<Mesh*> ret;
+	vector<std::shared_ptr<Mesh>> ret;
 	const char *end = data+size;
 	while(data < end) {
-		Mesh *mesh = new Mesh();
-		data += MeshHelper(mesh).set(data);
+		auto mesh = std::make_shared<Mesh>();
+		data += MeshHelper(mesh.get()).set(data);
 		ret.push_back(mesh);
 	}
 	return ret;

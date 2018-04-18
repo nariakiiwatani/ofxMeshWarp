@@ -8,7 +8,7 @@ void ManagedController::clearOperation()
 {
 	for_each(controllers_.begin(), controllers_.end(), [&](ControllerBase *t){t->clearOperation();});
 }
-void ManagedController::add(Mesh *mesh)
+void ManagedController::add(std::shared_ptr<Mesh> mesh)
 {
 	ControllerBase::add(mesh);
 	for_each(controllers_.begin(), controllers_.end(), [&](ControllerBase *t){t->add(mesh);});
