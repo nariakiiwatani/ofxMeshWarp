@@ -13,6 +13,7 @@ void Mesh::setup(int div_x, int div_y, float w, float h)
 	div_x_ = div_x;
 	div_y_ = div_y;
 	reset(w,h);
+	of_mesh_.setMode(OF_PRIMITIVE_TRIANGLES);
 }
 void Mesh::update()
 {
@@ -25,7 +26,11 @@ void Mesh::setTexCoordSize(float u, float v)
 	uv_size_.set(u,v);
 	setDirty();
 }
-
+void Mesh::setChildMeshResolution(int resolution)
+{
+	child_mesh_resolution_ = resolution;
+	setDirty();
+}
 void Mesh::divideCol(int pos, float ratio)
 {
 	if(pos < 0 || div_x_-1 <= pos) {
@@ -218,6 +223,25 @@ void Mesh::solve()
 	if(child_mesh_resolution_ > 1) {
 		refreshChildMeshes();
 	}
+	
+	of_mesh_.clear();
+	for(auto &p :mesh_) {
+		of_mesh_.addTexCoord(p.coord()*uv_size_);
+		of_mesh_.addColor(p.color());
+		of_mesh_.addNormal(p.normal());
+		of_mesh_.addVertex(p.point());
+	}
+	for(int y = 0; y < div_y_-1; ++y) {
+		for(int x = 0; x < div_x_-1; ++x) {
+			of_mesh_.addIndex(getIndex(x  ,y  ));
+			of_mesh_.addIndex(getIndex(x  ,y+1));
+			of_mesh_.addIndex(getIndex(x+1,y  ));
+			of_mesh_.addIndex(getIndex(x+1,y  ));
+			of_mesh_.addIndex(getIndex(x  ,y+1));
+			of_mesh_.addIndex(getIndex(x+1,y+1));
+		}
+	}
+
 	dirty_ = false;
 }
 
@@ -233,6 +257,7 @@ void Mesh::gc()
 	}
 	neu.swap(mesh_);
 	iota(indices_.begin(),indices_.end(), 0);
+	dirty_ = true;
 }
 
 vector<MeshPoint*> Mesh::getPoints()
@@ -252,34 +277,7 @@ void Mesh::drawMesh()
 		drawChildMesh();
 	}
 	else {
-		glBegin(GL_TRIANGLES);
-		if(ofGetUsingArbTex()) {
-			for(int y = 0; y < div_y_-1; ++y) {
-				for(int x = 0; x < div_x_-1; ++x) {
-					mesh_[getIndex(x  ,y  )].glArbPoint(uv_size_);
-					mesh_[getIndex(x  ,y+1)].glArbPoint(uv_size_);
-					mesh_[getIndex(x+1,y  )].glArbPoint(uv_size_);
-					
-					mesh_[getIndex(x+1,y  )].glArbPoint(uv_size_);
-					mesh_[getIndex(x  ,y+1)].glArbPoint(uv_size_);
-					mesh_[getIndex(x+1,y+1)].glArbPoint(uv_size_);
-				}
-			}
-		}
-		else {
-			for(int y = 0; y < div_y_-1; ++y) {
-				for(int x = 0; x < div_x_-1; ++x) {
-					mesh_[getIndex(x  ,y  )].glPoint();
-					mesh_[getIndex(x  ,y+1)].glPoint();
-					mesh_[getIndex(x+1,y  )].glPoint();
-					
-					mesh_[getIndex(x+1,y  )].glPoint();
-					mesh_[getIndex(x  ,y+1)].glPoint();
-					mesh_[getIndex(x+1,y+1)].glPoint();
-				}
-			}
-		}
-		glEnd();
+		of_mesh_.draw();
 	}
 }
 
@@ -321,14 +319,16 @@ void Mesh::drawWireframe()
 	for(int y = 0; y < div_y_; ++y) {
 		glBegin(GL_LINE_STRIP);
 		for(int x = 0; x < div_x_; ++x) {
-			mesh_[getIndex(x,y)].glPoint();
+			ofVec3f pos = mesh_[getIndex(x,y)].point();
+			glVertex3fv(&pos[0]);
 		}
 		glEnd();
 	}
 	for(int x = 0; x < div_x_; ++x) {
 		glBegin(GL_LINE_STRIP);
 		for(int y = 0; y < div_y_; ++y) {
-			mesh_[getIndex(x,y)].glPoint();
+			ofVec3f pos = mesh_[getIndex(x,y)].point();
+			glVertex3fv(&pos[0]);
 		}
 		glEnd();
 	}

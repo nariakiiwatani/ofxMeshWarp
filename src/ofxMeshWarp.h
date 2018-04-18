@@ -4,6 +4,7 @@
 #include "ofVec2f.h"
 #include "ofVec3f.h"
 #include "ofColor.h"
+#include "ofMesh.h"
 
 namespace ofx{namespace MeshWarp{
 class MeshPoint
@@ -28,19 +29,6 @@ public:
 	void setColor(const ofColor &color) { color_=color; }
 	void setNodal(bool set) { is_node_=set; }
 	void toggleNodal() { is_node_^=true; }
-	
-	void glPoint() {
-		glColor4ubv(&color_[0]);
-		glNormal3fv(&normal_[0]);
-		glTexCoord2fv(&coord_[0]);
-		glVertex3fv(&point_[0]);
-	}
-	void glArbPoint(const ofVec2f &uv_size) {
-		glColor4ubv(&color_[0]);
-		glNormal3fv(&normal_[0]);
-		glTexCoord2fv(&(coord_*uv_size)[0]);
-		glVertex3fv(&point_[0]);
-	}
 
 private:
 	ofVec3f point_ = ofVec3f(0,0,0);
@@ -58,7 +46,7 @@ public:
 	void setDirty() { dirty_ = true; }
 	void update();
 	void setTexCoordSize(float u, float v);
-	void setChildMeshResolution(int resolution) { child_mesh_resolution_ = resolution; }
+	void setChildMeshResolution(int resolution);
 	void divideCol(int pos, float ratio);
 	void divideRow(int pos, float ratio);
 	void reduceCol(int pos);
@@ -85,7 +73,8 @@ private:
 	int div_x_, div_y_;
 	ofVec2f uv_size_ = ofVec2f(1,1);
 	vector<int> indices_;
-	vector<MeshPoint> mesh_;	
+	vector<MeshPoint> mesh_;
+	ofMesh of_mesh_;
 	int getIndex(int x, int y) const { return indices_[y*div_x_+x]; }
 	int child_mesh_resolution_ = 8;
 	void drawChildMesh();
