@@ -29,7 +29,7 @@ namespace IO {
 		Mesh *target_;
 		struct MeshData {
 			int divx, divy, resolution;
-			ofRectangle uv_rect;
+			ofVec4f uv_rect;
 		};
 	};
 	class Saver {
