@@ -55,6 +55,8 @@ class Mesh
 {
 public:
 	void setup(int div_x, int div_y, float w, float h);
+	void setDirty() { dirty_ = true; }
+	void update();
 	void setTexCoordSize(float u, float v);
 	void setChildMeshResolution(int resolution) { child_mesh_resolution_ = resolution; }
 	void divideCol(int pos, float ratio);
@@ -62,7 +64,6 @@ public:
 	void reduceCol(int pos);
 	void reduceRow(int pos);
 	void reset(float w, float h);
-	void solve();
 	void drawMesh();
 	void drawWireframe();
 	void drawDetailedWireframe();
@@ -98,6 +99,10 @@ private:
 		|| interpolate_flags_.normal
 		|| interpolate_flags_.color;
 	}
+	vector<vector<Mesh>> child_meshes_;
+	bool dirty_=true;
+	void solve();
+	void refreshChildMeshes();
 };
 }}
 using ofxMeshWarp = ofx::MeshWarp::Mesh;

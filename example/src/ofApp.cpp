@@ -14,6 +14,7 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
 	ofSetWindowTitle(ofToString(ofGetFrameRate(),2));
+	mesh_->update();
 }
 
 //--------------------------------------------------------------

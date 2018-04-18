@@ -156,7 +156,7 @@ void PointController::mousePressed(ofMouseEventArgs &args)
 				}
 				mouse_op_.pressed_state = MouseOperation::STATE_NONE;
 				for(auto &m : meshes_) {
-					m->solve();
+					m->setDirty();
 				}
 			}
 			else if(isGrabbing()) {
@@ -242,7 +242,7 @@ void PointController::mouseDragged(ofMouseEventArgs &args)
 		}
 		if(moved_any) {
 			for(auto &m : meshes_) {
-				m->solve();
+				m->setDirty();
 			}
 		}
 	}
@@ -280,7 +280,7 @@ void PointController::keyPressed(ofKeyEventArgs &args)
 		}
 		if(moved_any) {
 			for(auto &m : meshes_) {
-				m->solve();
+				m->setDirty();
 			}
 		}
 		mouse_op_.hover = getHit(mouse_op_.pos);
@@ -385,7 +385,7 @@ void DivideController::mousePressed(ofMouseEventArgs &args)
 		}
 	}
 	if(dirty) {
-		hit_info_.mesh->solve();
+		hit_info_.mesh->setDirty();
 		hit_info_ = getHitInfo(local);
 	}
 }

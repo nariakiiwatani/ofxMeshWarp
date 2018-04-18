@@ -14,9 +14,16 @@ void Mesh::setup(int div_x, int div_y, float w, float h)
 	div_y_ = div_y;
 	reset(w,h);
 }
+void Mesh::update()
+{
+	if(dirty_) {
+		solve();
+	}
+}
 void Mesh::setTexCoordSize(float u, float v)
 {
 	uv_size_.set(u,v);
+	setDirty();
 }
 
 void Mesh::divideCol(int pos, float ratio)
@@ -36,6 +43,7 @@ void Mesh::divideCol(int pos, float ratio)
 	}
 	indices_ = indices;
 	++div_x_;
+	setDirty();
 }
 void Mesh::divideRow(int pos, float ratio)
 {
@@ -54,6 +62,7 @@ void Mesh::divideRow(int pos, float ratio)
 	}
 	indices_ = indices;
 	++div_y_;
+	setDirty();
 }
 void Mesh::reduceCol(int pos)
 {
@@ -70,6 +79,7 @@ void Mesh::reduceCol(int pos)
 		indices_.erase(indices_.begin()+index);
 	}
 	--div_x_;
+	setDirty();
 }
 void Mesh::reduceRow(int pos)
 {
@@ -85,6 +95,7 @@ void Mesh::reduceRow(int pos)
 	auto to = from+div_x_;
 	indices_.erase(from, to);
 	--div_y_;
+	setDirty();
 }
 void Mesh::reset(float w, float h)
 {
@@ -98,6 +109,7 @@ void Mesh::reset(float w, float h)
 	}
 	indices_.resize(num);
 	iota(indices_.begin(),indices_.end(), 0);
+	setDirty();
 }
 void Mesh::solve()
 {
@@ -203,6 +215,10 @@ void Mesh::solve()
 			}
 		}
 	}
+	if(child_mesh_resolution_ > 1) {
+		refreshChildMeshes();
+	}
+	dirty_ = false;
 }
 
 void Mesh::gc()
@@ -270,9 +286,9 @@ void Mesh::drawMesh()
 Mesh Mesh::makeChildMesh(int x, int y, int resolution)
 {
 	Mesh mesh;
-	mesh.setup(resolution, resolution, 1,1);
-	mesh.setTexCoordSize(uv_size_.x, uv_size_.y);
 	mesh.setChildMeshResolution(1);
+	mesh.setTexCoordSize(uv_size_.x, uv_size_.y);
+	mesh.setup(resolution, resolution, 1,1);
 	auto isCorner = [resolution](int x, int y) {
 		return (x==0&&y==0)||(x==resolution-1&&y==resolution-1);
 	};
@@ -294,10 +310,9 @@ void Mesh::drawChildMesh()
 		ofLogWarning(__FILE__, "child mesh resolution should be more than 2: %d", child_mesh_resolution_);
 		return;
 	}
-	for(int y = 0; y < div_y_-1; ++y) {
-		for(int x = 0; x < div_x_-1; ++x) {
-			Mesh &&mesh = makeChildMesh(x, y, child_mesh_resolution_);
-			mesh.drawMesh();
+	for(int x = 0; x < div_x_-1; ++x) {
+		for(int y = 0; y < div_y_-1; ++y) {
+			child_meshes_[x][y].drawMesh();
 		}
 	}
 }
@@ -321,10 +336,9 @@ void Mesh::drawWireframe()
 void Mesh::drawDetailedWireframe()
 {
 	if(child_mesh_resolution_ > 1) {
-		for(int y = 0; y < div_y_-1; ++y) {
-			for(int x = 0; x < div_x_-1; ++x) {
-				Mesh &&mesh = makeChildMesh(x, y, child_mesh_resolution_);
-				mesh.drawWireframe();
+		for(int x = 0; x < div_x_-1; ++x) {
+			for(int y = 0; y < div_y_-1; ++y) {
+				child_meshes_[x][y].drawWireframe();
 			}
 		}
 	}
@@ -332,3 +346,15 @@ void Mesh::drawDetailedWireframe()
 		drawWireframe();
 	}
 }
+
+void Mesh::refreshChildMeshes()
+{
+	child_meshes_.resize(div_x_-1);
+	for(int x = 0; x < div_x_-1; ++x) {
+		child_meshes_[x].resize(div_y_-1);
+		for(int y = 0; y < div_y_-1; ++y) {
+			child_meshes_[x][y] = makeChildMesh(x, y, child_mesh_resolution_);
+		}
+	}
+}
+
