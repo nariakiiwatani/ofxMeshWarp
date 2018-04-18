@@ -60,6 +60,7 @@ public:
 	void drawWireframe() const;
 	void drawDetailedWireframe() const;
 	vector<MeshPoint*> getPoints();
+	const ofMesh& getOfMesh() const { of_mesh_; }
 	int getDivX() const { return div_x_; }
 	int getDivY() const { return div_y_; }
 	const ofRectangle& getUVRect() const { return uv_rect_; }
