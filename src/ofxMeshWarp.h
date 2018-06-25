@@ -93,7 +93,7 @@ private:
 		|| interpolate_flags_.normal
 		|| interpolate_flags_.color;
 	}
-	vector<vector<Mesh>> child_meshes_;
+	std::vector<std::vector<Mesh>> child_meshes_;
 	bool dirty_=true;
 	void solve();
 	void refreshChildMeshes();

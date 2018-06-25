@@ -1,5 +1,6 @@
 #include "ofxMeshWarpController.h"
 #include "ofGraphics.h"
+#include "ofPoint.h"
 
 using namespace ofx::MeshWarp;
 using namespace ofx::MeshWarp::Editor;
@@ -529,7 +530,7 @@ bool MeshHelper::isHitBox(const ofVec2f &test, int top_left_index) const
 	poly.addVertex(box[1]->point());
 	poly.addVertex(box[3]->point());
 	poly.addVertex(box[2]->point());
-	return poly.inside(test);
+	return poly.inside(test.x, test.y);
 }
 bool MeshHelper::isHitLine(const ofVec2f &test, int index0, int index1, float room, float &pos) const
 {

@@ -103,7 +103,7 @@ namespace Editor {
 			MeshPoint *hover = nullptr;
 			std::vector<MeshPoint*> inside_rect;
 			ofVec2f pressed_pos, pos;
-			vector<PointHelper> edit;
+			std::vector<PointHelper> edit;
 			enum {
 				STATE_NONE,
 				STATE_GRABBING,

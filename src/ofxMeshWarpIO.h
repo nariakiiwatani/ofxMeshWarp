@@ -35,17 +35,17 @@ namespace IO {
 	class Saver {
 	public:
 		void addMesh(std::shared_ptr<Mesh> mesh);
-		void addMeshes(vector<std::shared_ptr<Mesh>> mesh);
-		void save(const string &filename) const;
+		void addMeshes(std::vector<std::shared_ptr<Mesh>> mesh);
+		void save(const std::string &filename) const;
 		void save(ofBuffer &buffer) const;
 	private:
 		std::vector<std::shared_ptr<Mesh>> meshes_;
 	};
 	class Loader {
 	public:
-		std::vector<std::shared_ptr<Mesh>> load(const string &filename) const;
+		std::vector<std::shared_ptr<Mesh>> load(const std::string &filename) const;
 		std::vector<std::shared_ptr<Mesh>> load(const ofBuffer &buffer) const;
-		std::vector<std::shared_ptr<Mesh>> load(const char *data, size_t size) const;
+		std::vector<std::shared_ptr<Mesh>> load(const char *data, std::size_t size) const;
 	};
 }
 
