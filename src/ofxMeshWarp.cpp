@@ -42,13 +42,13 @@ void Mesh::divideCol(int pos, float ratio)
 		ofLogError(__FILE__, "index out of bounds: %d", pos);
 		return;
 	}
-	vector<int>indices = indices_;
-	vector<int>::iterator it = begin(indices)+pos+1;
+	auto indices = indices_;
+	auto it = begin(indices)+pos+1;
 	for(int y = 0; y < div_y_; ++y) {
 		MeshPoint &a = mesh_[getIndex(pos,y)];
 		MeshPoint &b = mesh_[getIndex(pos+1,y)];
 		MeshPoint point = MeshPoint(MeshPoint::getLerped(a, b, ratio));
-		it = indices.insert(it, mesh_.size())+div_x_+1;
+		it = indices.insert(it, (ofIndexType)mesh_.size())+div_x_+1;
 		mesh_.push_back(point);
 	}
 	indices_ = indices;
@@ -61,13 +61,13 @@ void Mesh::divideRow(int pos, float ratio)
 		ofLogError(__FILE__, "index out of bounds: %d", pos);
 		return;
 	}
-	vector<int>indices = indices_;
-	vector<int>::iterator it = begin(indices)+(pos+1)*div_x_;
+	auto indices = indices_;
+	auto it = begin(indices)+(pos+1)*div_x_;
 	for(int x = 0; x < div_x_; ++x) {
 		MeshPoint &a = mesh_[getIndex(x,pos)];
 		MeshPoint &b = mesh_[getIndex(x,pos+1)];
 		MeshPoint point = MeshPoint(MeshPoint::getLerped(a, b, ratio));
-		it = indices.insert(it, mesh_.size())+1;
+		it = indices.insert(it, (ofIndexType)mesh_.size())+1;
 		mesh_.push_back(point);
 	}
 	indices_ = indices;
@@ -135,7 +135,7 @@ void Mesh::solve()
 			if(p1->isNode() || x == div_x_-1) {
 				if(work.size() > 1) {
 					MeshPoint *p0 = work[0];
-					for(int w = 1, num = work.size(); w < num; ++w) {
+					for(size_t w = 1, num = work.size(); w < num; ++w) {
 						MeshPoint lerped = MeshPoint::getLerped(*p0, *p1, w/(float)num);
 						if(isEnabledPointInterpolation()) work[w]->setPoint(lerped.point());
 						if(isEnabledCoordInterpolation()) work[w]->setCoord(lerped.coord());
@@ -157,7 +157,7 @@ void Mesh::solve()
 			if(p1->isNode() || y == div_y_-1) {
 				if(work.size() > 1) {
 					MeshPoint *p0 = work[0];
-					for(int w = 1, num = work.size(); w < num; ++w) {
+					for(size_t w = 1, num = work.size(); w < num; ++w) {
 						MeshPoint lerped = MeshPoint::getLerped(*p0, *p1, w/(float)num);
 						if(isEnabledPointInterpolation()) work[w]->setPoint(lerped.point());
 						if(isEnabledCoordInterpolation()) work[w]->setCoord(lerped.coord());

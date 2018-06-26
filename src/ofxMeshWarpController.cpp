@@ -326,7 +326,7 @@ void DivideController::drawCustom() const
 				assert(points0.size() == points1.size());
 				ofSetColor(ofColor::green);
 				glBegin(GL_LINE_STRIP);
-				for(int  i = 0, num = points0.size(); i < num; ++i) {
+				for(size_t i = 0, num = points0.size(); i < num; ++i) {
 					glm::vec2 p = glm::mix(points0[i]->point(), points1[i]->point(), hit_info_.pos_intersection);
 					glVertex2fv(&p[0]);
 				}
@@ -338,7 +338,7 @@ void DivideController::drawCustom() const
 				assert(points0.size() == points1.size());
 				ofSetColor(ofColor::green);
 				glBegin(GL_LINE_STRIP);
-				for(int  i = 0, num = points0.size(); i < num; ++i) {
+				for(size_t i = 0, num = points0.size(); i < num; ++i) {
 					glm::vec2 p = glm::mix(points0[i]->point(), points1[i]->point(), hit_info_.pos_intersection);
 					glVertex2fv(&p[0]);
 				}
@@ -557,7 +557,7 @@ vector<MeshPoint*> MeshHelper::getColPoints(int point_index) const
 	vector<MeshPoint*> ret;
 	int div_x = target_->getDivX();
 	const auto &points = target_->getPoints();
-	for(int index = point_index%div_x, num = points.size(); index < num; index += div_x) {
+	for(size_t index = point_index%div_x, num = points.size(); index < num; index += div_x) {
 		ret.emplace_back(points[index]);
 	}
 	return ret;

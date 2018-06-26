@@ -60,7 +60,7 @@ public:
 	void drawWireframe() const;
 	void drawDetailedWireframe() const;
 	std::vector<MeshPoint*> getPoints();
-	const ofMesh& getOfMesh() const { of_mesh_; }
+	const ofMesh& getOfMesh() const { return of_mesh_; }
 	int getDivX() const { return div_x_; }
 	int getDivY() const { return div_y_; }
 	const ofRectangle& getUVRect() const { return uv_rect_; }
@@ -77,10 +77,10 @@ public:
 private:
 	int div_x_, div_y_;
 	ofRectangle uv_rect_ = ofRectangle(0,0,1,1);
-	std::vector<int> indices_;
+	std::vector<ofIndexType> indices_;
 	std::vector<MeshPoint> mesh_;
 	ofMesh of_mesh_;
-	int getIndex(int x, int y) const { return indices_[y*div_x_+x]; }
+	ofIndexType getIndex(int x, int y) const { return indices_[y*div_x_+x]; }
 	int child_mesh_resolution_ = 8;
 	void drawChildMesh() const;
 	Mesh makeChildMesh(int x, int y, int resolution) const;
