@@ -113,9 +113,9 @@ void Mesh::reset(float w, float h)
 	mesh_.resize(num);
 	for(int i = 0; i < num; ++i) {
 		MeshPoint &point = mesh_[i];
-		ofVec2f coord = ofVec2f(i%div_x_,i/div_x_)/ofVec2f(div_x_-1,div_y_-1);
+		glm::vec2 coord = glm::vec2(i%div_x_,i/div_x_)/glm::vec2(div_x_-1,div_y_-1);
 		point.setCoord(coord);
-		point.setPoint(coord*ofVec2f(w,h));
+		point.setPoint(glm::vec3(coord*glm::vec2(w,h), 0));
 	}
 	indices_.resize(num);
 	iota(begin(indices_), end(indices_), 0);
@@ -198,15 +198,15 @@ void Mesh::solve()
 		};
 		MeshPoint &dst = mesh_[getIndex(x,y)];
 		if(isEnabledPointInterpolation()) {
-			ofVec3f point = [&around,&ratio](){ofVec3f ret;for(auto &p:around)ret+=p.first->point()*ratio(p.second);return ret;}();
+			glm::vec3 point = [&around,&ratio](){glm::vec3 ret;for(auto &p:around)ret+=p.first->point()*ratio(p.second);return ret;}();
 			dst.setPoint(point);
 		}
 		if(isEnabledCoordInterpolation()) {
-			ofVec2f coord = [&around,&ratio](){ofVec2f ret;for(auto &p:around)ret+=p.first->coord()*ratio(p.second);return ret;}();
+			glm::vec2 coord = [&around,&ratio](){glm::vec2 ret;for(auto &p:around)ret+=p.first->coord()*ratio(p.second);return ret;}();
 			dst.setCoord(coord);
 		}
 		if(isEnabledNormalInterpolation()) {
-			ofVec3f normal = [&around,&ratio](){ofVec3f ret;for(auto &p:around)ret+=p.first->normal()*ratio(p.second);return ret;}();
+			glm::vec3 normal = [&around,&ratio](){glm::vec3 ret;for(auto &p:around)ret+=p.first->normal()*ratio(p.second);return ret;}();
 			dst.setNormal(normal);
 		}
 		if(isEnabledColorInterpolation()) {
@@ -238,7 +238,7 @@ void Mesh::solve()
 	
 	of_mesh_.clear();
 	for(auto &p :mesh_) {
-		ofVec2f coord = p.coord();
+		glm::vec2 coord = p.coord();
 		coord.x =ofMap(coord.x, 0, 1, uv_rect_.getLeft(), uv_rect_.getRight());
 		coord.y =ofMap(coord.y, 0, 1, uv_rect_.getTop(), uv_rect_.getBottom());
 		of_mesh_.addTexCoord(coord);
@@ -334,7 +334,7 @@ void Mesh::drawWireframe() const
 	for(int y = 0; y < div_y_; ++y) {
 		glBegin(GL_LINE_STRIP);
 		for(int x = 0; x < div_x_; ++x) {
-			ofVec3f pos = mesh_[getIndex(x,y)].point();
+			glm::vec3 pos = mesh_[getIndex(x,y)].point();
 			glVertex3fv(&pos[0]);
 		}
 		glEnd();
@@ -342,7 +342,7 @@ void Mesh::drawWireframe() const
 	for(int x = 0; x < div_x_; ++x) {
 		glBegin(GL_LINE_STRIP);
 		for(int y = 0; y < div_y_; ++y) {
-			ofVec3f pos = mesh_[getIndex(x,y)].point();
+			glm::vec3 pos = mesh_[getIndex(x,y)].point();
 			glVertex3fv(&pos[0]);
 		}
 		glEnd();

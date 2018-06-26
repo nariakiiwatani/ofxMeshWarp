@@ -13,9 +13,9 @@ namespace IO {
 	private:
 		MeshPoint *target_;
 		struct PointData {
-			ofVec3f point;
-			ofVec2f coord;
-			ofVec3f normal;
+			glm::vec3 point;
+			glm::vec2 coord;
+			glm::vec3 normal;
 			ofFloatColor color;
 			bool is_node;
 		};

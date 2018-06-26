@@ -1,6 +1,6 @@
 #include "ofxMeshWarpController.h"
 #include "ofGraphics.h"
-#include "ofPoint.h"
+#include "glm/vec3.hpp"
 
 using namespace ofx::MeshWarp;
 using namespace ofx::MeshWarp::Editor;
@@ -117,7 +117,7 @@ bool PointController::isEditing() const
 }
 void PointController::mousePressed(ofMouseEventArgs &args)
 {
-	ofVec2f local = screenToLocal(args);
+	glm::vec2 local = screenToLocal(args);
 	mouse_op_.pressed_pos = local;
 	mouse_op_.pressed_state = MouseOperation::STATE_NONE;
 	switch(args.button) {
@@ -174,7 +174,7 @@ void PointController::mousePressed(ofMouseEventArgs &args)
 }
 void PointController::mouseReleased(ofMouseEventArgs &args)
 {
-	ofVec2f local = screenToLocal(args);
+	glm::vec2 local = screenToLocal(args);
 	if(isMakingRect()) {
 		if(!isAlternative() && !isAdditive()) {
 			selected_.clear();
@@ -195,11 +195,11 @@ void PointController::mouseReleased(ofMouseEventArgs &args)
 }
 void PointController::mouseMoved(ofMouseEventArgs &args)
 {
-	ofVec2f local = screenToLocal(args);
+	glm::vec2 local = screenToLocal(args);
 	mouse_op_.pos = local;
 	mouse_op_.hover = getHit(local);
 }
-MeshPoint* PointController::getHit(const ofVec2f &test) const
+MeshPoint* PointController::getHit(const glm::vec2 &test) const
 {
 	for(auto &mesh : meshes_) {
 		MeshHelper m(mesh.get());
@@ -212,7 +212,7 @@ MeshPoint* PointController::getHit(const ofVec2f &test) const
 
 void PointController::mouseDragged(ofMouseEventArgs &args)
 {
-	ofVec2f local = screenToLocal(args);
+	glm::vec2 local = screenToLocal(args);
 	mouse_op_.pos = local;
 	if(isMakingRect()) {
 		mouse_op_.inside_rect.clear();
@@ -223,7 +223,7 @@ void PointController::mouseDragged(ofMouseEventArgs &args)
 		}
 	}
 	else if(isGrabbing()) {
-		ofVec2f delta = local-mouse_op_.pressed_pos;
+		glm::vec2 delta = local-mouse_op_.pressed_pos;
 		if(isSlide()) {
 			delta.x = abs(delta.x)<abs(delta.y)?0:delta.x;
 			delta.y = abs(delta.y)<abs(delta.x)?0:delta.y;
@@ -274,14 +274,14 @@ void PointController::mouseExited(ofMouseEventArgs &args)
 }
 void PointController::keyPressed(ofKeyEventArgs &args)
 {
-	ofVec2f delta;
+	glm::vec2 delta;
 	switch(args.key) {
-		case OF_KEY_UP:		delta = ofVec2f(0,-1)/scale_; break;
-		case OF_KEY_DOWN:	delta = ofVec2f(0, 1)/scale_; break;
-		case OF_KEY_LEFT:	delta = ofVec2f(-1,0)/scale_; break;
-		case OF_KEY_RIGHT:	delta = ofVec2f(1, 0)/scale_; break;
+		case OF_KEY_UP:		delta = glm::vec2(0,-1)/scale_; break;
+		case OF_KEY_DOWN:	delta = glm::vec2(0, 1)/scale_; break;
+		case OF_KEY_LEFT:	delta = glm::vec2(-1,0)/scale_; break;
+		case OF_KEY_RIGHT:	delta = glm::vec2(1, 0)/scale_; break;
 	}
-	if(delta.lengthSquared() > 0) {
+	if(glm::length2(delta) > 0) {
 		bool moved_any = false;
 		for(auto &p : selected_) {
 			if(p->isNode()) {
@@ -327,7 +327,7 @@ void DivideController::drawCustom() const
 				ofSetColor(ofColor::green);
 				glBegin(GL_LINE_STRIP);
 				for(int  i = 0, num = points0.size(); i < num; ++i) {
-					ofPoint p = points0[i]->point().getInterpolated(points1[i]->point(), hit_info_.pos_intersection);
+					glm::vec2 p = glm::mix(points0[i]->point(), points1[i]->point(), hit_info_.pos_intersection);
 					glVertex2fv(&p[0]);
 				}
 				glEnd();
@@ -339,7 +339,7 @@ void DivideController::drawCustom() const
 				ofSetColor(ofColor::green);
 				glBegin(GL_LINE_STRIP);
 				for(int  i = 0, num = points0.size(); i < num; ++i) {
-					ofPoint p = points0[i]->point().getInterpolated(points1[i]->point(), hit_info_.pos_intersection);
+					glm::vec2 p = glm::mix(points0[i]->point(), points1[i]->point(), hit_info_.pos_intersection);
 					glVertex2fv(&p[0]);
 				}
 				glEnd();
@@ -378,7 +378,7 @@ bool DivideController::isEditing() const
 
 void DivideController::mousePressed(ofMouseEventArgs &args)
 {
-	ofVec2f local = screenToLocal(args);
+	glm::vec2 local = screenToLocal(args);
 	bool dirty = false;
 	if(isDivide()) {
 		if(hit_info_.isLineX()) {
@@ -410,7 +410,7 @@ void DivideController::mouseReleased(ofMouseEventArgs &args)
 }
 void DivideController::mouseMoved(ofMouseEventArgs &args)
 {
-	ofVec2f local = screenToLocal(args);
+	glm::vec2 local = screenToLocal(args);
 	hit_info_ = getHitInfo(local);
 }
 void DivideController::mouseDragged(ofMouseEventArgs &args)
@@ -431,7 +431,7 @@ void DivideController::keyPressed(ofKeyEventArgs &args)
 void DivideController::keyReleased(ofKeyEventArgs &args)
 {
 }
-DivideController::HitInfo DivideController::getHitInfo(const ofVec2f &test) const
+DivideController::HitInfo DivideController::getHitInfo(const glm::vec2 &test) const
 {
 	HitInfo info;
 	bool is_hit = false;
@@ -470,14 +470,14 @@ DivideController::HitInfo DivideController::getHitInfo(const ofVec2f &test) cons
 
 
 // ==========
-MeshPoint* MeshHelper::getHit(const ofVec2f &test, float room, int index) const
+MeshPoint* MeshHelper::getHit(const glm::vec2 &test, float room, int index) const
 {
 	const vector<MeshPoint*> &points = target_->getPoints();
 	for(auto &p : points) {
 		if(index < 0) {
 			return nullptr;
 		}
-		if(test.squareDistance(p->point()) < room*room && index-- == 0) {
+		if(glm::distance2(glm::vec3(test,0), p->point()) < room*room && index-- == 0) {
 			return p;
 		}
 	}
@@ -521,7 +521,7 @@ vector<int> MeshHelper::getBoxIndices(int top_left_index) const
 	ret.emplace_back(top_left_index+target_->getDivX()+1);
 	return ret;
 }
-bool MeshHelper::isHitBox(const ofVec2f &test, int top_left_index) const
+bool MeshHelper::isHitBox(const glm::vec2 &test, int top_left_index) const
 {
 	const auto &box = getBox(top_left_index);
 	assert(box.size() == 4);
@@ -532,14 +532,14 @@ bool MeshHelper::isHitBox(const ofVec2f &test, int top_left_index) const
 	poly.addVertex(box[2]->point());
 	return poly.inside(test.x, test.y);
 }
-bool MeshHelper::isHitLine(const ofVec2f &test, int index0, int index1, float room, float &pos) const
+bool MeshHelper::isHitLine(const glm::vec2 &test, int index0, int index1, float room, float &pos) const
 {
 	const auto &points = target_->getPoints();
-	const ofPoint &pivot = points[index0]->point();
-	const ofPoint &anchor = points[index1]->point();
+	const glm::vec3 &pivot = points[index0]->point();
+	const glm::vec3 &anchor = points[index1]->point();
 	float angle = atan2((test-pivot).y, (test-pivot).x)-atan2((anchor-pivot).y, (anchor-pivot).x);
-	ofPoint alternative = ofPoint(test).getRotatedRad(-angle*2, pivot, ofVec3f(0,0,1));
-	ofPoint intersection = (test+alternative)/2.f;
+	glm::vec3 alternative = glm::rotate(glm::vec3(test,0)-pivot, -angle*2, glm::vec3(0,0,1)) + pivot;
+	glm::vec3 intersection = (glm::vec3(test,0)+alternative)/2.f;
 	if(pivot.x == anchor.x) {
 		pos = ofMap(intersection.y, pivot.y, anchor.y, 0, 1, false);
 	}
@@ -547,7 +547,7 @@ bool MeshHelper::isHitLine(const ofVec2f &test, int index0, int index1, float ro
 		pos = ofMap(intersection.x, pivot.x, anchor.x, 0, 1, false);
 	}
 	if(0<=pos&&pos<=1) {
-		return (test-intersection).lengthSquared() < room*room;
+		return glm::distance2(glm::vec3(test,0), intersection) < room*room;
 	}
 	return false;
 }

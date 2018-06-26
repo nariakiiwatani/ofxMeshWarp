@@ -10,13 +10,13 @@ namespace Editor {
 	class PointHelper : public std::pair<MeshPoint*,MeshPoint> {
 	public:
 		PointHelper(MeshPoint *p):pair(p,*p){}
-		void setVertex(const ofVec2f &point) { first->setPoint(point); }
-		void setVertexMove(const ofVec2f &move) { first->setPoint(second.point()+move); }
-		void moveVertex(const ofVec2f &move) { first->setPoint(first->point()+move); }
+		void setVertex(const glm::vec2 &point) { first->setPoint(glm::vec3(point,0)); }
+		void setVertexMove(const glm::vec2 &move) { first->setPoint(second.point()+move); }
+		void moveVertex(const glm::vec2 &move) { first->setPoint(first->point()+move); }
 		void resetVertex() { first->setPoint(second.point()); }
-		void setCoord(const ofVec2f &point) { first->setCoord(point); }
-		void setCoordMove(const ofVec2f &move) { first->setCoord(second.coord()+move); }
-		void moveCoord(const ofVec2f &move) { first->setCoord(first->coord()+move); }
+		void setCoord(const glm::vec2 &point) { first->setCoord(point); }
+		void setCoordMove(const glm::vec2 &move) { first->setCoord(second.coord()+move); }
+		void moveCoord(const glm::vec2 &move) { first->setCoord(first->coord()+move); }
 		void resetCoord() { first->setCoord(second.coord()); }
 		void setColor(const ofFloatColor &color) { first->setColor(color); }
 		void resetColor() { first->setColor(second.color()); }
@@ -28,12 +28,12 @@ namespace Editor {
 	{
 	public:
 		MeshHelper(Mesh *m):target_(m){}
-		MeshPoint* getHit(const ofVec2f &test, float room, int index=0) const;
+		MeshPoint* getHit(const glm::vec2 &test, float room, int index=0) const;
 		std::vector<MeshPoint*> getHit(const ofRectangle &test) const;
 		std::vector<MeshPoint*> getBox(int top_left_index) const;
 		std::vector<int> getBoxIndices(int top_left_index) const;
-		bool isHitBox(const ofVec2f &test, int top_left_index) const;
-		bool isHitLine(const ofVec2f &test, int index0, int index1, float room, float &pos) const;
+		bool isHitBox(const glm::vec2 &test, int top_left_index) const;
+		bool isHitLine(const glm::vec2 &test, int index0, int index1, float room, float &pos) const;
 		std::vector<MeshPoint*> getColPoints(int point_index) const;
 		std::vector<MeshPoint*> getRowPoints(int point_index) const;
 	private:
@@ -53,8 +53,10 @@ namespace Editor {
 		void draw() const;
 		void drawFace() const;
 		
-		void setAnchorPoint(float x, float y) { anchor_point_.set(x,y); }
-		void setTranslation(float x, float y) { translation_.set(x,y); }
+		void setAnchorPoint(float x, float y) { setAnchorPoint(glm::vec2(x,y)); }
+		void setAnchorPoint(const glm::vec2 &point) { anchor_point_ = point; }
+		void setTranslation(float x, float y) { setTranslation(glm::vec2(x,y)); }
+		void setTranslation(const glm::vec2 &point) { translation_ = point; }
 		void setScale(float s) { assert(s>0); scale_ = s; }
 		
 		virtual bool isEditing() const { return false; }
@@ -75,11 +77,11 @@ namespace Editor {
 		bool is_enabled_ = false;
 		virtual void drawCustom() const{};
 		
-		ofVec2f anchor_point_=ofVec2f(0,0);
-		ofVec2f translation_=ofVec2f(0,0);
+		glm::vec2 anchor_point_=glm::vec2(0,0);
+		glm::vec2 translation_=glm::vec2(0,0);
 		float scale_=1;
-		ofVec2f screenToLocal(ofVec2f src) const { return (src-translation_)/scale_+anchor_point_; }
-		ofVec2f localToScreen(ofVec2f src) const { return (src-anchor_point_)*scale_+translation_; }
+		glm::vec2 screenToLocal(glm::vec2 src) const { return (src-translation_)/scale_+anchor_point_; }
+		glm::vec2 localToScreen(glm::vec2 src) const { return (src-anchor_point_)*scale_+translation_; }
 	};
 
 	class PointController : public ControllerBase
@@ -102,7 +104,7 @@ namespace Editor {
 		struct MouseOperation {
 			MeshPoint *hover = nullptr;
 			std::vector<MeshPoint*> inside_rect;
-			ofVec2f pressed_pos, pos;
+			glm::vec2 pressed_pos, pos;
 			std::vector<PointHelper> edit;
 			enum {
 				STATE_NONE,
@@ -125,7 +127,7 @@ namespace Editor {
 		virtual bool isEditCoord() const { return ofGetKeyPressed(OF_KEY_ALT); }
 		virtual bool isEditVertex() const { return !ofGetKeyPressed(OF_KEY_ALT); }
 		
-		MeshPoint* getHit(const ofVec2f &test) const;
+		MeshPoint* getHit(const glm::vec2 &test) const;
 	};
 	class DivideController  : public ControllerBase
 	{
@@ -158,7 +160,7 @@ namespace Editor {
 		
 		virtual bool isDivide() const { return !ofGetKeyPressed(OF_KEY_ALT); }
 		virtual bool isReduce() const { return ofGetKeyPressed(OF_KEY_ALT); }
-		HitInfo getHitInfo(const ofVec2f &test) const;
+		HitInfo getHitInfo(const glm::vec2 &test) const;
 	};
 }
 }}

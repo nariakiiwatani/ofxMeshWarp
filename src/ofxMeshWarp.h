@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ofConstants.h"
-#include "ofVec2f.h"
-#include "ofVec3f.h"
+#include "glm/vec2.hpp"
+#include "glm/vec3.hpp"
 #include "ofColor.h"
 #include "ofMesh.h"
 #include "ofRectangle.h"
@@ -13,30 +13,30 @@ class MeshPoint
 public:
 	static MeshPoint getLerped(const MeshPoint &a, const MeshPoint &b, float mix) {
 		MeshPoint ret;
-		ret.point_ = a.point_.getInterpolated(b.point_, mix);
-		ret.coord_ = a.coord_.getInterpolated(b.coord_, mix);
-		ret.normal_ = a.normal_.getInterpolated(b.normal_, mix);
+		ret.point_ = glm::mix(a.point_, b.point_, mix);
+		ret.coord_ = glm::mix(a.coord_, b.coord_, mix);
+		ret.normal_ = glm::mix(a.normal_, b.normal_, mix);
 		ret.color_ = a.color_.getLerped(b.color_, mix);
 		return ret;
 	}
-	const ofVec3f &point() const { return point_; }
-	const ofVec2f &coord() const { return coord_; }
-	const ofVec3f &normal() const { return normal_; }
+	const glm::vec3 &point() const { return point_; }
+	const glm::vec2 &coord() const { return coord_; }
+	const glm::vec3 &normal() const { return normal_; }
 	const ofFloatColor &color() const { return color_; }
 	float alpha() const { return color_.a; }
 	bool isNode() const { return is_node_; }
-	void setPoint(const ofVec3f &point) { point_=point; }
-	void setCoord(const ofVec2f &coord) { coord_=coord; }
-	void setNormal(const ofVec3f &normal) { normal_=normal; }
+	void setPoint(const glm::vec3 &point) { point_=point; }
+	void setCoord(const glm::vec2 &coord) { coord_=coord; }
+	void setNormal(const glm::vec3 &normal) { normal_=normal; }
 	void setColor(const ofFloatColor &color) { color_=color; }
 	void setAlpha(float alpha) { color_.a=alpha; }
 	void setNodal(bool set) { is_node_=set; }
 	void toggleNodal() { is_node_^=true; }
 
 private:
-	ofVec3f point_ = ofVec3f(0,0,0);
-	ofVec2f coord_ = ofVec2f(0,0);
-	ofVec3f normal_ = ofVec3f(0,0,1);
+	glm::vec3 point_ = glm::vec3(0,0,0);
+	glm::vec2 coord_ = glm::vec2(0,0);
+	glm::vec3 normal_ = glm::vec3(0,0,1);
 	ofFloatColor color_ = ofFloatColor::white;
 	bool is_node_ = true;
 };
