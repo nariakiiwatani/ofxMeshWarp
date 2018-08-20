@@ -42,15 +42,18 @@ void Mesh::divideCol(int pos, float ratio)
 		ofLogError(__FILE__, "index out of bounds: %d", pos);
 		return;
 	}
-	auto indices = indices_;
-	auto it = begin(indices)+pos+1;
-	for(int y = 0; y < div_y_; ++y) {
-		MeshPoint &a = mesh_[getIndex(pos,y)];
-		MeshPoint &b = mesh_[getIndex(pos+1,y)];
-		MeshPoint point = MeshPoint(MeshPoint::getLerped(a, b, ratio));
-		it = indices.insert(it, (ofIndexType)mesh_.size())+div_x_+1;
-		mesh_.push_back(point);
-	}
+    vector<ofIndexType>indices = indices_;
+    for (int y = 0; y < div_y_; ++y) {
+        // insert indices
+        auto it = begin(indices) + (y*div_x_) + (pos + 1) + y;    // the index position where to insert
+        indices.insert(it, (ofIndexType)mesh_.size())+1;
+
+        // push point into mesh
+        MeshPoint &a = mesh_[getIndex(pos, y)];                 // the index before the one we want to insert. on the left
+        MeshPoint &b = mesh_[getIndex(pos + 1, y)];             // the index after the one we want to insert. on the right
+        MeshPoint point = MeshPoint(MeshPoint::getLerped(a, b, ratio)); // find the location of the point, based on ratio
+        mesh_.push_back(point);
+    }
 	indices_ = indices;
 	++div_x_;
 	setDirty();
