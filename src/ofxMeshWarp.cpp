@@ -48,8 +48,11 @@ void Mesh::divideCol(int pos, float ratio)
 		MeshPoint &a = mesh_[getIndex(pos,y)];
 		MeshPoint &b = mesh_[getIndex(pos+1,y)];
 		MeshPoint point = MeshPoint(MeshPoint::getLerped(a, b, ratio));
-		it = indices.insert(it, (ofIndexType)mesh_.size())+div_x_+1;
+		it = indices.insert(it, mesh_.size());
 		mesh_.push_back(point);
+		if(y < div_y_-1) {
+			it += div_x_+1;
+		}
 	}
 	indices_ = indices;
 	++div_x_;

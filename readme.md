@@ -40,9 +40,9 @@ So if you call divide/reduce many times, you may need to call `ofxMeshWarp::gc()
 See example
 
 ## Tested on
-- Mac OSX 10.12.2  
-- oF 0.9.8  
-- Xcode 8.3.3
+- Mac OSX 10.13.6  
+- oF 0.10.0  
+- Xcode  9.4.1
 
 ## License
 MIT license.
