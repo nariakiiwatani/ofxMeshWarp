@@ -305,6 +305,21 @@ Mesh Mesh::makeChildMesh(int x, int y, int resolution) const
 	auto isCorner = [resolution](int x, int y) {
 		return (x==0&&y==0)||(x==resolution-1&&y==resolution-1);
 	};
+#ifndef OFXMESHWARP_USE_OLD_CHILDMESH
+	const MeshPoint *quad[2][2] = {
+		{&mesh_[getIndex(x,y)], &mesh_[getIndex(x,y+1)]},
+		{&mesh_[getIndex(x+1,y)], &mesh_[getIndex(x+1,y+1)]}
+	};
+	for(int iy = 0; iy < resolution; ++iy) {
+		float ry = iy/(float)(resolution-1);
+		MeshPoint cp[2] = {MeshPoint::getLerped(*quad[0][0], *quad[0][1], ry), MeshPoint::getLerped(*quad[1][0], *quad[1][1], ry)};
+		for(int ix = 0; ix < resolution; ++ix) {
+			float rx = ix/(float)(resolution-1);
+			mesh.mesh_[mesh.getIndex(ix,iy)] = MeshPoint::getLerped(cp[0], cp[1], rx);
+		}
+	}
+	mesh.update();
+#else
 	mesh.mesh_[mesh.getIndex(0,0)] = mesh_[getIndex(x,y)];
 	mesh.mesh_[mesh.getIndex(resolution-1,0)] = mesh_[getIndex(x+1,y)];
 	mesh.mesh_[mesh.getIndex(0,resolution-1)] = mesh_[getIndex(x,y+1)];
@@ -315,6 +330,7 @@ Mesh Mesh::makeChildMesh(int x, int y, int resolution) const
 		}
 	}
 	mesh.solve();
+#endif
 	return mesh;
 }
 void Mesh::drawChildMesh() const
