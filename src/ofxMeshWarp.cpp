@@ -351,20 +351,20 @@ void Mesh::drawChildMesh() const
 void Mesh::drawWireframe() const
 {
 	for(int y = 0; y < div_y_; ++y) {
-		glBegin(GL_LINE_STRIP);
+		ofMesh mesh;
+		mesh.setMode(OF_PRIMITIVE_LINE_STRIP);
 		for(int x = 0; x < div_x_; ++x) {
-			glm::vec3 pos = mesh_[getIndex(x,y)].point();
-			glVertex3fv(&pos[0]);
+			mesh.addVertex(mesh_[getIndex(x,y)].point());
 		}
-		glEnd();
+		mesh.draw();
 	}
 	for(int x = 0; x < div_x_; ++x) {
-		glBegin(GL_LINE_STRIP);
+		ofMesh mesh;
+		mesh.setMode(OF_PRIMITIVE_LINE_STRIP);
 		for(int y = 0; y < div_y_; ++y) {
-			glm::vec3 pos = mesh_[getIndex(x,y)].point();
-			glVertex3fv(&pos[0]);
+			mesh.addVertex(mesh_[getIndex(x,y)].point());
 		}
-		glEnd();
+		mesh.draw();
 	}
 }
 void Mesh::drawDetailedWireframe() const
