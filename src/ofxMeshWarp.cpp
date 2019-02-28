@@ -306,7 +306,7 @@ Mesh Mesh::makeChildMesh(int x, int y, int resolution) const
 	mesh.setUVRect(uv_rect_);
 	mesh.setup(ofRectangle(0,0,1,1), resolution, resolution);
 	auto isCorner = [resolution](int x, int y) {
-		return (x==0&&y==0)||(x==resolution-1&&y==resolution-1);
+		return (x==0||x==resolution-1)&&(y==0||y==resolution-1);
 	};
 #ifndef OFXMESHWARP_USE_OLD_CHILDMESH
 	const MeshPoint *quad[2][2] = {
