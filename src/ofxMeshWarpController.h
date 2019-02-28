@@ -90,6 +90,8 @@ namespace Editor {
 		void clearOperation();
 		void drawCustom() const;
 		bool isEditing() const;
+
+		void setUVResolution(const glm::vec2 &res) { screen_to_coord_ = res; }
 		
 		virtual void mousePressed(ofMouseEventArgs &args);
 		virtual void mouseReleased(ofMouseEventArgs &args);
@@ -114,7 +116,7 @@ namespace Editor {
 		} mouse_op_;
 		std::set<MeshPoint*> selected_;
 		float point_size_ = 10;
-		float screen_to_coord_ = 1/100.f;
+		glm::vec2 screen_to_coord_=glm::vec2(1024.f,1024.f);
 		float scroll_to_alpha_ = -1/100.f;
 		
 		bool isGrabbing() const { return mouse_op_.pressed_state==MouseOperation::STATE_GRABBING; }

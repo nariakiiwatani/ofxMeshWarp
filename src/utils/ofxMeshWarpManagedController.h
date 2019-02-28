@@ -11,6 +11,8 @@ namespace Editor {
 		void clear();
 		void clearOperation();
 
+		void setUVResolution(const glm::vec2 &res) { mover_.setUVResolution(res); }
+
 		void setAnchorPoint(float x, float y);
 		void setTranslation(float x, float y);
 		void setScale(float s);

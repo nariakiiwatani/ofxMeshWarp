@@ -236,7 +236,7 @@ void PointController::mouseDragged(ofMouseEventArgs &args)
 					work.resetCoord();
 				}
 				if(isEditCoord()) {
-					work.setCoordMove(delta*screen_to_coord_);
+					work.setCoordMove(delta/screen_to_coord_);
 					work.resetVertex();
 				}
 				moved_any = true;
@@ -289,7 +289,7 @@ void PointController::keyPressed(ofKeyEventArgs &args)
 					PointHelper(p).moveVertex(delta*(isArrowKeyJump()?10:1));
 				}
 				if(isEditCoord()){
-					PointHelper(p).moveCoord(delta*(isArrowKeyJump()?10:1)*screen_to_coord_);
+					PointHelper(p).moveCoord(delta*(isArrowKeyJump()?10:1)/screen_to_coord_);
 				}
 				moved_any = true;
 			}
