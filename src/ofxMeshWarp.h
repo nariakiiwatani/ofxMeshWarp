@@ -47,6 +47,7 @@ class Mesh
 public:
 	void setup(const ofRectangle &rect, int div_x, int div_y);
 	void setDirty() { dirty_ = true; }
+	bool isDirty() const { return dirty_; }
 	void update();
 	OF_DEPRECATED_MSG("use setUVRect instead", void setTexCoordSize(float u, float v));
 	void setUVRect(const ofRectangle &uv);
