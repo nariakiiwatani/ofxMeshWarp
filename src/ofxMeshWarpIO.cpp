@@ -42,7 +42,7 @@ int MeshHelper::set(const char *buffer)
 {
 	int ret = 0;
 	MeshData *data = (MeshData*)buffer;
-	target_->setup(data->divx, data->divy, 1, 1);
+	target_->setup(ofRectangle(0,0,1,1), data->divx, data->divy);
 	target_->setUVRect(ofRectangle(data->uv_rect[0], data->uv_rect[1], data->uv_rect[2], data->uv_rect[3]));
 	ret += sizeof(MeshData);
 	auto points = target_->getPoints();

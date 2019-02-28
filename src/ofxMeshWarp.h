@@ -45,7 +45,7 @@ private:
 class Mesh
 {
 public:
-	void setup(int div_x, int div_y, float w, float h);
+	void setup(const ofRectangle &rect, int div_x, int div_y);
 	void setDirty() { dirty_ = true; }
 	void update();
 	OF_DEPRECATED_MSG("use setUVRect instead", void setTexCoordSize(float u, float v));
@@ -55,7 +55,7 @@ public:
 	void divideRow(int pos, float ratio);
 	void reduceCol(int pos);
 	void reduceRow(int pos);
-	void reset(float w, float h);
+	void reset(const ofRectangle &rect);
 	void drawMesh() const;
 	void drawWireframe() const;
 	void drawDetailedWireframe() const;

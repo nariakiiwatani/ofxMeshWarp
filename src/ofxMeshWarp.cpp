@@ -5,7 +5,7 @@
 using namespace ofx::MeshWarp;
 using namespace std;
 
-void Mesh::setup(int div_x, int div_y, float w, float h)
+void Mesh::setup(const ofRectangle &rect, int div_x, int div_y)
 {
 	if(div_x < 1 || div_y < 1) {
 		ofLogError(__FILE__, "div_x and div_y must be bigger than 1");
@@ -13,7 +13,7 @@ void Mesh::setup(int div_x, int div_y, float w, float h)
 	}
 	div_x_ = div_x;
 	div_y_ = div_y;
-	reset(w,h);
+	reset(rect);
 	of_mesh_.setMode(OF_PRIMITIVE_TRIANGLES);
 }
 void Mesh::update()
@@ -110,7 +110,7 @@ void Mesh::reduceRow(int pos)
 	--div_y_;
 	setDirty();
 }
-void Mesh::reset(float w, float h)
+void Mesh::reset(const ofRectangle &rect)
 {
 	int num = div_x_*div_y_;
 	mesh_.resize(num);
@@ -118,7 +118,7 @@ void Mesh::reset(float w, float h)
 		MeshPoint &point = mesh_[i];
 		glm::vec2 coord = glm::vec2(i%div_x_,i/div_x_)/glm::vec2(div_x_-1,div_y_-1);
 		point.setCoord(coord);
-		point.setPoint(glm::vec3(coord*glm::vec2(w,h), 0));
+		point.setPoint(rect.position + glm::vec3(coord*glm::vec2(rect.getWidth(),rect.getHeight()), 0));
 	}
 	indices_.resize(num);
 	iota(begin(indices_), end(indices_), 0);
@@ -304,7 +304,7 @@ Mesh Mesh::makeChildMesh(int x, int y, int resolution) const
 	Mesh mesh;
 	mesh.setChildMeshResolution(1);
 	mesh.setUVRect(uv_rect_);
-	mesh.setup(resolution, resolution, 1,1);
+	mesh.setup(ofRectangle(0,0,1,1), resolution, resolution);
 	auto isCorner = [resolution](int x, int y) {
 		return (x==0&&y==0)||(x==resolution-1&&y==resolution-1);
 	};
